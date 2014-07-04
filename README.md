@@ -5,7 +5,7 @@ CDocParser is a language agonistc C style comments parser that uses block commen
 
 ## Install
 
-```shell
+```bash
 $ npm install --save cdocparser
 ```
 
