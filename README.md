@@ -1,7 +1,6 @@
 CDocParser
 ---
-CDocParser is a language agonistc C style comments parser that uses block comments to make it easer to generate
-Documenation.
+CDocParser is a language agonistc C style comments parser that uses block comments to make it easer to generate documenation.
 
 
 ## Install
