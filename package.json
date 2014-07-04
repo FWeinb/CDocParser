@@ -1,5 +1,5 @@
 {
-  "name": "CDocParser",
+  "name": "cdocparser",
   "version": "0.0.1",
   "description": "Extract C style comments and extract context from source",
   "main": "index.js",
