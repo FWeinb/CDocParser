@@ -1,12 +1,12 @@
 CDocParser
 ---
-CDocParser is a language agonistc C style comments parser that uses block comments to make it easer to generate documenation.
+CDocParser is a language agonistc C style comments parser that uses block comments to make it easier to generate documentation.
 
 
 ## Install
 
-```shell
-npm install --save cdocparser
+```bash
+$ npm install --save cdocparser
 ```
 
 
