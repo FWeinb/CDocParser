@@ -41,7 +41,9 @@ describe('CommentParser', function(){
     { lines : ['test', 'test', '@test'], context : { type : 'testType1'} },
     { lines : ['test', 'test', '@aliasTest'], context : { type : 'testType2'} },
     { lines : ['test', 'test', '@test'], context : { type : 'testType2'} },
-    { lines : ['test', 'test', '@test'], context : { type : 'testType3'} }
+    { lines : ['test', 'test', '@test'], context : { type : 'testType3'} },
+    { lines : ['test', 'test', '@flag'], context : { type : 'testType3'} },
+    { lines : ['@multiline\nThis is a\nmultiline\nannotation\n'], context : { type : 'testType3'} }
   ];
 
   // Test Annotations
@@ -53,6 +55,14 @@ describe('CommentParser', function(){
     },
     test : function ( commentLine ){
       return "Working";
+    },
+
+    flag : function(){
+      return true;
+    },
+
+    multiline : function(commentLine){
+      return commentLine;
     }
   };
 
@@ -63,7 +73,7 @@ describe('CommentParser', function(){
      var result = parser.parse ( comments );
          assert.equal(result.testType1.length , 1);
          assert.equal(result.testType2.length , 2);
-         assert.equal(result.testType3.length , 1);
+	 assert.equal(result.testType3.length , 3);
     });
 
     it('should join lines without annotation into description', function(){
@@ -76,6 +86,17 @@ describe('CommentParser', function(){
      var result = parser.parse ( comments );
          assert.equal(result.testType2.length , 2);
          assert.equal(result.testType2[0].test[0] , 'Working' );
+    });
+
+    it('should convert an annotation that returns a boolean to a flag', function(){
+     var result = parser.parse ( comments );
+	 assert.equal(result.testType3[1].flag , true );
+    });
+
+    it('should parse a multiline annotation', function(){
+     var result = parser.parse ( comments );
+	assert.equal(result.testType3[2].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
+
     });
 
   });

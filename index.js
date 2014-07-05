@@ -40,7 +40,7 @@ var CommentExtractor = (function(){
  * Capable of parsing comments and resolving @annotations
  */
 var CommentParser = (function(){
-  var annotationRegex = /^\s*@(\w+)\s*(.*?)$/m;
+  var annotationRegex = /^\s*@(\w+)/;
 
   function CommentParser( annotations ) {
     this.annotations = annotations;
@@ -56,7 +56,6 @@ var CommentParser = (function(){
     comment.lines.forEach(function(line){
       var match = annotationRegex.exec(line);
       if ( match ) {
-
         var name = annotations._.alias[match[1]] || match[1]; // Resolve name from alias
         var annotationParser =  annotations[name]; // Get the annotations parser from the annotations map.
 
@@ -67,8 +66,15 @@ var CommentParser = (function(){
           }
 
           // Parsed the annotation.
-          parsedComment[name].push( annotationParser(match[2]) );
+	  var content = line.substr(match.index + match[0].length);
+	  var result = annotationParser(content);
 
+	  // If it is a boolean use the annotaion as a flag
+	  if ( result === false || result === true) {
+	    parsedComment[name] = result;
+	  } else {
+	    parsedComment[name].push( result );
+	  }
         } else { 
           // Complain
           console.log ( "Parser for annotation '" + match[1] + "' not found.");
