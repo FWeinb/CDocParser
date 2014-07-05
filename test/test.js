@@ -11,7 +11,12 @@ describe('CommentExtractor', function(){
       var comments = extractor.extract('/**\n* Comment\n */');
       assert.equal(comments.length, 1);
       assert.equal(comments[0].lines.length, 1);
-      assert.equal(comments[0].lines[0], 'Comment\n ');
+      assert.equal(comments[0].lines[0], 'Comment');
+    });
+
+    it('should remove "*" in empty lines', function(){
+      var comments = extractor.extract('/**\n * Test\n * \n * Test\n */');
+      assert.deepEqual(comments[0].lines, [ 'Test', '', 'Test' ]);
     });
 
     it('should extract more than one comment', function(){
@@ -73,7 +78,7 @@ describe('CommentParser', function(){
      var result = parser.parse ( comments );
          assert.equal(result.testType1.length , 1);
          assert.equal(result.testType2.length , 2);
-	 assert.equal(result.testType3.length , 3);
+        assert.equal(result.testType3.length , 3);
     });
 
     it('should join lines without annotation into description', function(){
@@ -90,12 +95,12 @@ describe('CommentParser', function(){
 
     it('should convert an annotation that returns a boolean to a flag', function(){
      var result = parser.parse ( comments );
-	 assert.equal(result.testType3[1].flag , true );
+          assert.equal(result.testType3[1].flag , true );
     });
 
     it('should parse a multiline annotation', function(){
      var result = parser.parse ( comments );
-	assert.equal(result.testType3[2].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
+          assert.equal(result.testType3[2].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
 
     });
 

@@ -6,12 +6,14 @@ var CommentExtractor = (function () {
 
   var cleanComment = function (comment) {
     // Split all comments at \n and remove the first '*'
-    var commentLines = comment.split(/(?:\n|\r\n)\s*\*(?:\s*|)/, -1);
+    var commentLines = comment.split(/(?:\n|\n\r)?\s*\*\s*/, -1);
     // Remove first line if empty
     if (commentLines[0].length === 0) {
       commentLines.shift();
     }
-
+    if (commentLines[commentLines.length-1]) {
+     commentLines[commentLines.length-1] = commentLines[commentLines.length-1].trim();
+    }
     return commentLines;
   };
 
