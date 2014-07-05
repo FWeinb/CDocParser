@@ -11,12 +11,17 @@ describe('CommentExtractor', function(){
       var comments = extractor.extract('/**\n* Comment\n */');
       assert.equal(comments.length, 1);
       assert.equal(comments[0].lines.length, 1);
-      assert.equal(comments[0].lines[0], 'Comment');
+      assert.equal(comments[0].lines[0], ' Comment');
     });
 
     it('should remove "*" in empty lines', function(){
       var comments = extractor.extract('/**\n * Test\n * \n * Test\n */');
-      assert.deepEqual(comments[0].lines, [ 'Test', '', 'Test' ]);
+      assert.deepEqual(comments[0].lines, [ " Test"," "," Test" ]);
+    });
+
+    it('shuld not split every "*"', function(){
+      var comments = extractor.extract('/**\n * @param {*} $list - list to purge\n * Test\n * \n * Test\n */');
+      assert.deepEqual(comments[0].lines, [ " @param {*} $list - list to purge"," Test"," "," Test" ]);
     });
 
     it('should extract more than one comment', function(){
