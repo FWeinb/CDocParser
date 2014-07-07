@@ -5,16 +5,11 @@ var CommentExtractor = (function () {
   var docCommentRegEx = /\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)\*\//gm;
 
   var cleanComment = function (comment) {
-    // Split all comments at \n and remove the first '*'
-    var commentLines = comment.split(/(?:\n|\n\r)\s*(?:\*)?/, -1);
-    // Remove first line if empty
-    if (commentLines[0].length === 0) {
-      commentLines.shift();
-    }
-    if (commentLines[commentLines.length-1] !== undefined && commentLines[commentLines.length-1].length === 0) {
-        commentLines.pop();
-    }
-    return commentLines;
+    // Split all comments at \r or \n
+    var commentLines = comment.replace(/^\s+|\s+$/g,'').match(/[^\r\n]+/g);
+    return commentLines.map(function(line){
+      return line.replace(/^\s*\*\s*/, '');
+    });
   };
 
   function CommentExtractor (parseContext) {
@@ -73,7 +68,7 @@ var CommentParser = (function(){
           }
             // Parsed the annotation.
             var content = line.substr(match.index + match[0].length);
-            var result = annotationParser(content);
+            var result = annotationParser(content.replace(/^\s+|\s+$/g,''));
 
             // If it is a boolean use the annotaion as a flag
             if ( result === false || result === true) {
