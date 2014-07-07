@@ -105,7 +105,7 @@ describe('CommentParser', function(){
 
     it('should parse a multiline annotation', function(){
      var result = parser.parse ( comments );
-          assert.equal(result.testType3[2].multiline[0] , "This is a\nmultiline\nannotation");
+          assert.equal(result.testType3[2].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
 
     });
 
