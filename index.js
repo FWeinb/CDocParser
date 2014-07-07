@@ -68,7 +68,7 @@ var CommentParser = (function(){
           }
             // Parsed the annotation.
             var content = line.substr(match.index + match[0].length);
-            var result = annotationParser(content.replace(/^\s+|\s+$/g,''));
+            var result = annotationParser(content.replace(/^[ \t]+|[ \t]+$/g,''));
 
             // If it is a boolean use the annotaion as a flag
             if ( result === false || result === true) {
