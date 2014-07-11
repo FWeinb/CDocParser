@@ -1,15 +1,17 @@
+'use strict';
+
+var stripIndent = require('strip-indent');
+
 /**
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var docCommentRegEx = /\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)\*\//gm;
+  var docCommentRegEx = /^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)\*\//gm;
 
   var cleanComment = function (comment) {
-    // Split all comments at \r or \n
-    var commentLines = comment.replace(/^\s+|\s+$/g,'').match(/[^\r\n]+/g);
-    return commentLines.map(function(line){
-      return line.replace(/^\s*\*\s*/, '');
-    });
+    var removeFirstLine = comment.replace(/^.*?[\r\n]+|[\r\n].*?$/g, '');
+    var removeLeadingStar = removeFirstLine.replace(/^[ \t]*\*/gm, '');
+    return stripIndent(removeLeadingStar).split(/\n/);
   };
 
   function CommentExtractor (parseContext) {

@@ -25,12 +25,12 @@ describe('CommentExtractor', function(){
     });
 
     it('should extract more than one comment', function(){
-      var comments = extractor.extract('/**\n* Comment\n */ /**\n* Comment\n */ /**\n* Comment\n */');
+      var comments = extractor.extract('/**\n * Comment\n */\n/**\n * Comment\n */\n/**\n* Comment\n */');
       assert.equal(comments.length, 3);
     });
 
-    it('should ignore block comments like /* comment */', function(){
-      var comments = extractor.extract('/**\n* Comment\n */ /*\n* Comment\n */ /**\n* Comment\n */');
+    it ('should ignore block comments like /* comment */', function(){
+      var comments = extractor.extract('/**\n* Comment\n */\n/*\n* Comment\n */\n/**\n* Comment\n */');
       assert.equal(comments.length, 2);
     });
 
@@ -39,6 +39,18 @@ describe('CommentExtractor', function(){
       assert.equal(comments.length, 1);
       assert.equal(comments[0].context.type, 'testCtx');
     });
+
+    it('should ignore `**` in single line comments', function(){
+      var comments = extractor.extract('//** \n\n\n */');
+      assert.equal(comments.length, 0);
+    });
+
+    it('should normalize the indentation', function(){
+      var comments = extractor.extract('/**\n * @example\n *  @include chain(bright, ".test") {\n *    color: #fff;\n *  }\n */');
+      assert.deepEqual(comments[0].lines, ['@example', ' @include chain(bright, ".test") {', '   color: #fff;', ' }' ]);
+    });
+
+
   });
 
 });
