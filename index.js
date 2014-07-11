@@ -45,7 +45,7 @@ var CommentExtractor = (function () {
  * Capable of parsing comments and resolving @annotations
  */
 var CommentParser = (function(){
-  var annotationRegex = /^\s*@(\w+)/;
+  var annotationRegex = /^@(\w+)/;
 
   function CommentParser (annotations) {
     this.annotations = annotations;

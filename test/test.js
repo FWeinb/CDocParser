@@ -61,6 +61,7 @@ describe('CommentParser', function(){
   // Test comments
   var comments = [
     { lines : ['test', 'test', '@test'], context : { type : 'testType1'} },
+    { lines : ['test', 'test', ' @test'], context : { type : 'testType1'} },
     { lines : ['test', 'test', '@aliasTest'], context : { type : 'testType2'} },
     { lines : ['test', 'test', '@test'], context : { type : 'testType2'} },
     { lines : ['test', 'test', '@test'], context : { type : 'testType3'} },
@@ -93,14 +94,14 @@ describe('CommentParser', function(){
   describe('#parse', function(){
     it('should group comments by context type', function(){
      var result = parser.parse ( comments );
-         assert.equal(result.testType1.length , 1);
+         assert.equal(result.testType1.length , 2);
          assert.equal(result.testType2.length , 2);
         assert.equal(result.testType3.length , 3);
     });
 
     it('should join lines without annotation into description', function(){
      var result = parser.parse ( comments );
-         assert.equal(result.testType1.length , 1);
+         assert.equal(result.testType1.length , 2);
          assert.equal(result.testType1[0].description , 'test\ntest\n');
     });
 
@@ -119,6 +120,11 @@ describe('CommentParser', function(){
      var result = parser.parse ( comments );
           assert.equal(result.testType3[2].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
 
+    });
+
+    it('should ignore annotations that aren\'t at the start of the line', function(){
+     var result = parser.parse ( comments );
+          assert.equal(result.testType1[1].test , undefined);
     });
 
   });
