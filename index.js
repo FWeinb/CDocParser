@@ -62,20 +62,20 @@ var CommentParser = (function(){
       var match = annotationRegex.exec(line);
       if (match) {
         var name = annotations._.alias[match[1]] || match[1]; // Resolve name from alias
-        var annotationParser = annotations[name]; // Get the annotations parser from the annotations map.
+        var annotationParser = annotations[name].parse; // Get the annotations parser from the annotations map.
 
         if (annotationParser) { 
           if (typeof parsedComment[name] === 'undefined') {
             parsedComment[name] = [];
           }
-            // Parsed the annotation.
+            // Parse the annotation.
             var content = line.substr(match.index + match[0].length);
             var result = annotationParser(content.replace(/^[ \t]+|[ \t]+$/g,''));
 
             // If it is a boolean use the annotaion as a flag
             if ( result === false || result === true) {
               parsedComment[name] = result;
-            } else {
+            } else if ( result !== undefined ) {
               parsedComment[name].push( result );
             }
         } else { 
@@ -86,6 +86,16 @@ var CommentParser = (function(){
 
       else {
         parsedComment.description += line + '\n';
+      }
+    });
+
+    // Fill in defaults
+    Object.keys(annotations).forEach(function (key){
+      if ( key !== "_"){
+        var defaultFunc = annotations[key].default;
+        if ( defaultFunc !== undefined && parsedComment[key] === undefined ) {
+          parsedComment[key] = [defaultFunc()];
+        }
       }
     });
 

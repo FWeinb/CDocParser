@@ -82,8 +82,13 @@ Create a new `CommentParser` where `annotaions` is an object like:
     }
   },
 
-  aRealAnnotation: function (annotationLine) {
-
+  aRealAnnotation: {
+    parse : function (annotationLine) {
+    
+    },
+    default : function(){
+      return 5;
+    }
   }
 }
 ```
@@ -109,3 +114,15 @@ object will look like:
 ## Development
 
 Use `mocha test` to run the unit tests.
+
+## Changelog
+
+#### 0.1.1
+  
+  * Ignore annotations that return `undefined`.
+
+#### 0.1.0 
+  
+  * Restructure annotation function. Add `default` value and `parse` function.
+
+

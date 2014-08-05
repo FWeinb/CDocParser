@@ -62,6 +62,7 @@ describe('CommentParser', function(){
   var comments = [
     { lines : ['test', 'test', '@test'], context : { type : 'testType1'} },
     { lines : ['test', 'test', ' @test'], context : { type : 'testType1'} },
+    { lines : ['test', '@ignore ingore this', 'test', '@ignore ingore this'], context : { type : 'testType1'} },
     { lines : ['test', 'test', '@aliasTest'], context : { type : 'testType2'} },
     { lines : ['test', 'test', '@test'], context : { type : 'testType2'} },
     { lines : ['test', 'test', '@test'], context : { type : 'testType3'} },
@@ -76,16 +77,26 @@ describe('CommentParser', function(){
         "aliasTest" : "test"
       }
     },
-    test : function ( commentLine ){
-      return "Working";
+    ignore : {
+      parse : function() {}
     },
-
-    flag : function(){
-      return true;
+    test : {
+      parse : function ( commentLine ){
+        return "Working";
+      },
+      default : function(){
+        return "Default";
+      }
     },
-
-    multiline : function(commentLine){
-      return commentLine;
+    flag : {
+      parse : function(){
+        return true;
+      }
+    },
+    multiline : {
+      parse : function(commentLine){
+        return commentLine;
+      }
     }
   };
 
@@ -94,14 +105,18 @@ describe('CommentParser', function(){
   describe('#parse', function(){
     it('should group comments by context type', function(){
      var result = parser.parse ( comments );
-         assert.equal(result.testType1.length , 2);
+         assert.equal(result.testType1.length , 3);
          assert.equal(result.testType2.length , 2);
         assert.equal(result.testType3.length , 3);
     });
 
+    it('should add default values', function(){
+     var result = parser.parse ( comments );
+          assert.equal(result.testType3[1].test[0] , 'Default' );
+    });
+
     it('should join lines without annotation into description', function(){
      var result = parser.parse ( comments );
-         assert.equal(result.testType1.length , 2);
          assert.equal(result.testType1[0].description , 'test\ntest\n');
     });
 
@@ -124,7 +139,12 @@ describe('CommentParser', function(){
 
     it('should ignore annotations that aren\'t at the start of the line', function(){
      var result = parser.parse ( comments );
-          assert.equal(result.testType1[1].test , undefined);
+          assert.equal(result.testType1[1].test[0] , 'Default');
+    });
+
+    it('should ignore annotations that won\'t return anything', function(){
+     var result = parser.parse ( comments );
+          assert.deepEqual(result.testType1[2].ignore , []);
     });
 
   });
