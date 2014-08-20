@@ -147,6 +147,15 @@ describe('CommentParser', function(){
           assert.deepEqual(result.testType1[2].ignore , []);
     });
 
+    it('should throw an error if annotation was not found', function(){
+      try{
+        var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'} }] );
+        assert.deepEqual(result.testType1[2].ignore , []);
+      } catch (e) {
+        assert.equal(e + '', 'Error: Parser for annotation `notFound` not found.');
+      }
+    });
+
   });
 
 });
