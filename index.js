@@ -62,9 +62,10 @@ var CommentParser = (function(){
       var match = annotationRegex.exec(line);
       if (match) {
         var name = annotations._.alias[match[1]] || match[1]; // Resolve name from alias
-        var annotationParser = annotations[name].parse; // Get the annotations parser from the annotations map.
 
-        if (annotationParser) { 
+        if (annotations[name] && annotations[name].parse){
+          var annotationParser = annotations[name].parse; // Get the annotations parser from the annotations map.
+
           if (typeof parsedComment[name] === 'undefined') {
             parsedComment[name] = [];
           }
@@ -79,8 +80,7 @@ var CommentParser = (function(){
               parsedComment[name].push( result );
             }
         } else { 
-          // Complain
-          console.log ('Parser for annotation `' + match[1] + '` not found.');
+          throw new Error('Parser for annotation `' + match[1] + '` not found.');
         }
       }
 
