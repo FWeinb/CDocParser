@@ -117,6 +117,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.2.1
+ 
+  * Emits an `warning` if a annotation was not found instead of throwing an exception.
+
 #### 0.2.0 
  
   * Throw an error if annotation was not found

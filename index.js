@@ -1,5 +1,7 @@
 'use strict';
 
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
 var stripIndent = require('strip-indent');
 
 /**
@@ -48,11 +50,13 @@ var CommentParser = (function(){
   var annotationRegex = /^@(\w+)/;
 
   function CommentParser (annotations) {
+    EventEmitter.call(this);
     this.annotations = annotations;
   }
 
+  util.inherits(CommentParser, EventEmitter);
 
-  var parseComment = function (comment, annotations) {
+  var parseComment = function (comment, annotations, emitter) {
     var parsedComment = {
       description: '',
       context: comment.context
@@ -80,7 +84,7 @@ var CommentParser = (function(){
               parsedComment[name].push( result );
             }
         } else { 
-          throw new Error('Parser for annotation `' + match[1] + '` not found.');
+          emitter.emit('warning', new Error('Parser for annotation `' + match[1] + '` not found.'));
         }
       }
 
@@ -116,11 +120,12 @@ var CommentParser = (function(){
         result[type] = [];
       }
 
-      result[type].push(parseComment(comment, this.annotations));
+      result[type].push(parseComment(comment, this.annotations, this));
     }, this);
 
     return result;
   };
+
 
   return CommentParser;
 })();
