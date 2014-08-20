@@ -117,6 +117,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.2.0 
+ 
+  * Throw an error if annotation was not found
+
 #### 0.1.1
   
   * Ignore annotations that return `undefined`.
