@@ -2,9 +2,9 @@ var assert = require("assert");
 var docParser = require('../');
 
 
-describe('CommentExtractor', function(){
+var extractor = new docParser.CommentExtractor( function (){ return { type : 'testCtx'}; } );
 
-  var extractor = new docParser.CommentExtractor( function (){ return { type : 'testCtx'}; } );
+describe('CommentExtractor', function(){
 
   describe('#extract', function(){
     it('should extract 1 comments', function(){
@@ -99,10 +99,14 @@ describe('CommentParser', function(){
       }
     }
   };
-
-  var parser = new docParser.CommentParser( annotations );
-
+  var parser;
   describe('#parse', function(){
+
+    beforeEach(function(){
+      parser = new docParser.CommentParser( annotations );
+    });
+
+
     it('should group comments by context type', function(){
      var result = parser.parse ( comments );
          assert.equal(result.testType1.length , 3);
@@ -155,6 +159,22 @@ describe('CommentParser', function(){
       var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'} }] );
     });
 
+    it('should apply annotations in a poster comment to each item', function () {
+      var comments = extractor.extract('/**\n  * Hello world\n  */\n@mixin mix(){\n\n}\n\n/**\n * Poster Comment\n * @flag\n **/\n\n\n\n /**\n  * Hello world\n  */\n@function test(){\n\n}');
+      var result = parser.parse ( comments );
+      assert.equal(result.testCtx[0].flag , undefined);
+      assert.equal(result.testCtx[1].flag , true);
+    });
+
+    it('should emit an error if more than one poster comment was used', function(done){
+      var comments = extractor.extract('/**\n * Poster Comment\n **/ \n\n\n /**\n * Poster Comment\n **/');
+
+      parser.on('warning', function(err){
+        assert.equal(err + '', 'Error: You can\'t have more than one poster comment.');
+        done();
+      });
+      var result = parser.parse (comments);
+    });
   });
 
 });

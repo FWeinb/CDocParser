@@ -3,12 +3,15 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var stripIndent = require('strip-indent');
+var extend = require('lodash.assign');
+
+
 
 /**
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var docCommentRegEx = /^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)\*\//gm;
+  var docCommentRegEx = /^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
 
   var cleanComment = function (comment) {
     var removeFirstLine = comment.replace(/^.*?[\r\n]+|[\r\n].*?$/g, '');
@@ -30,8 +33,10 @@ var CommentExtractor = (function () {
     var comments = [];
 
     while ( (match = docCommentRegEx.exec(code)) ) {
+      var commentType = match[2].length === 1 ? 'normal' : 'poster';
       comments.push({
         lines: cleanComment(match[1]),
+        type: commentType,
         context: this.parseContext(code.substr(match.index + match[0].length))
       });
     }
@@ -56,7 +61,7 @@ var CommentParser = (function(){
 
   util.inherits(CommentParser, EventEmitter);
 
-  var parseComment = function (comment, annotations, emitter) {
+  var parseComment = function (comment, annotations, emitter, posterComment) {
     var parsedComment = {
       description: '',
       context: comment.context
@@ -93,6 +98,26 @@ var CommentParser = (function(){
       }
     });
 
+
+
+    // Save this as the PosterComment
+    if (comment.type === 'poster'){
+      // Only allow one posterComment per file
+      if (Object.keys(posterComment).length === 0){
+        extend(posterComment, parsedComment);
+      } else {
+        emitter.emit('warning', new Error('You can\'t have more than one poster comment.'));
+      }
+      // Don't add poster comments to the output
+      return null;
+    } else {
+      // Merge in posterComment annotations and overwrite each annotation of item if it was not set
+      Object.keys(posterComment).forEach(function(key){
+        if (parsedComment[key] === undefined){
+          parsedComment[key] = posterComment[key];
+        }
+      });
+    }
     // Fill in defaults
     Object.keys(annotations).forEach(function (key){
       if ( key !== "_"){
@@ -112,15 +137,17 @@ var CommentParser = (function(){
    */
   CommentParser.prototype.parse = function (comments) {
     var result = {};
+    var posterComment = {};
 
     comments.forEach(function (comment) {
-      var type = comment.context.type;
-
-      if (typeof result[type] === 'undefined') {
-        result[type] = [];
+      var parsedComment = parseComment(comment, this.annotations, this, posterComment);
+      if (parsedComment !== null){
+        var type = comment.context.type;
+        if (typeof result[type] === 'undefined') {
+          result[type] = [];
+        }
+        result[type].push(parsedComment);
       }
-
-      result[type].push(parseComment(comment, this.annotations, this));
     }, this);
 
     return result;
