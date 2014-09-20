@@ -117,9 +117,14 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.2.2
+
+  * Add a `poster comment` to apply annotations to all items in the file that are documented.
+  * Emits a `warning` if you use more than on `poster comment` per file. Only the first one will be used.
+
 #### 0.2.1
  
-  * Emits an `warning` if a annotation was not found instead of throwing an exception.
+  * Emits a `warning` if a annotation was not found instead of throwing an exception.
 
 #### 0.2.0 
  
