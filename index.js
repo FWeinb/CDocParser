@@ -11,12 +11,32 @@ var extend = require('lodash.assign');
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var docCommentRegEx = /^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
+  var docCommentRegEx = /(?:\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
 
-  var cleanComment = function (comment) {
+  var cleanBlockComment = function (comment) {
     var removeFirstLine = comment.replace(/^.*?[\r\n]+|[\r\n].*?$/g, '');
     var removeLeadingStar = removeFirstLine.replace(/^[ \t]*\*/gm, '');
     return stripIndent(removeLeadingStar).split(/\n/);
+  };
+
+  var cleanLineComments = function (comment) {
+    var type;
+    var lines = comment.split('///');
+        lines.shift();
+
+    if (lines[0] !== undefined && lines[0].indexOf('/') === 0){
+      lines.shift(); // Remove line with stars
+      type = 'poster';
+    }
+
+    var removedCommentChars = lines.join('').replace(/\n$/, '');
+
+    // Remove indention and remove last element if empty
+    lines = stripIndent(removedCommentChars).split('\n');
+    return {
+      lines : lines,
+      type : type
+    };
   };
 
   function CommentExtractor (parseContext) {
@@ -33,9 +53,22 @@ var CommentExtractor = (function () {
     var comments = [];
 
     while ( (match = docCommentRegEx.exec(code)) ) {
-      var commentType = match[2].length === 1 ? 'normal' : 'poster';
+      var commentType = 'normal';
+      var lines;
+      // Detect if line comment or block comment
+      if (match[1] === undefined){
+        var lineObj = cleanLineComments(match[0]);
+        lines = lineObj.lines;
+        commentType = lineObj.type || commentType;
+      } else {
+        lines = cleanBlockComment(match[1]);
+        // If there are more than one stare
+        if (match[2].length > 1) {
+          commentType =  'poster';
+        }
+      }
       comments.push({
-        lines: cleanComment(match[1]),
+        lines: lines,
         type: commentType,
         context: this.parseContext(code.substr(match.index + match[0].length))
       });
