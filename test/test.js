@@ -179,6 +179,7 @@ describe('CDocParser', function(){
       it('should apply annotations in a block poster comment to each item', function () {
         var comments = getCommentsFrom('blockPoster.test.scss');
         var result = parser.parse ( comments );
+        assert.equal(result.testCtx.length  , 2);
         assert.equal(result.testCtx[0].flag , undefined);
         assert.equal(result.testCtx[1].flag , true);
       });
@@ -186,6 +187,7 @@ describe('CDocParser', function(){
       it('should apply annotations in a line poster comment to each item', function () {
         var comments = getCommentsFrom('linePoster.test.scss');
         var result = parser.parse ( comments );
+        assert.equal(result.testCtx.length  , 2);
         assert.equal(result.testCtx[0].flag , undefined);
         assert.equal(result.testCtx[1].flag , true);
       });

@@ -13,6 +13,28 @@ var extend = require('lodash.assign');
 var CommentExtractor = (function () {
   var docCommentRegEx = /(?:\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
 
+  /**
+   * Generate a function that will index a buffer of text
+   * and return a line for a specify char index
+   *
+   * @param {String} buffer buffer that is indexed
+   * @return {Function} Function that translates an char index to line number
+   */
+  function index(buffer) {
+    var indexData = {0: 0};
+
+    for (var i = 0, length = buffer.length, line = 1; i < length; i++) {
+      if (buffer[i] === '\n') {
+        indexData[i + 1] = ++line;
+      }
+    }
+
+    return function (offset) {
+      for (var i = offset; i >= 0 && buffer[i] != '\n'; i--);
+      return indexData[i + 1];
+    };
+  }
+
   var cleanBlockComment = function (comment) {
     var removeFirstLine = comment.replace(/^.*?[\r\n]+|[\r\n].*?$/g, '');
     var removeLeadingStar = removeFirstLine.replace(/^[ \t]*\*/gm, '');
@@ -21,10 +43,10 @@ var CommentExtractor = (function () {
 
   var cleanLineComments = function (comment) {
     var type;
-    var lines = comment.split('///');
+    var lines = comment.split(/[\/]{3,}/);
         lines.shift();
 
-    if (lines[0] !== undefined && lines[0].indexOf('/') === 0){
+    if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
       lines.shift(); // Remove line with stars
       type = 'poster';
     }
@@ -33,6 +55,7 @@ var CommentExtractor = (function () {
 
     // Remove indention and remove last element if empty
     lines = stripIndent(removedCommentChars).split('\n');
+
     return {
       lines : lines,
       type : type
@@ -52,6 +75,8 @@ var CommentExtractor = (function () {
     var match;
     var comments = [];
 
+    var lineNumberFor = index(code);
+
     while ( (match = docCommentRegEx.exec(code)) ) {
       var commentType = 'normal';
       var lines;
@@ -67,10 +92,17 @@ var CommentExtractor = (function () {
           commentType =  'poster';
         }
       }
+
+      var matchIndex = match.index + match[0].length;
+
+      var lineNumberWithOffsetFor = function(offset){
+        return lineNumberFor(matchIndex + offset);
+      };
+
       comments.push({
         lines: lines,
         type: commentType,
-        context: this.parseContext(code.substr(match.index + match[0].length))
+        context: this.parseContext(code.substr(matchIndex), lineNumberWithOffsetFor)
       });
     }
 

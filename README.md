@@ -117,6 +117,11 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.3.0 
+
+ * Add support for `///` comments 
+ * Add a `lineNumber` function as a second parameter that will convert char indices to line numbers
+
 #### 0.2.2
 
   * Add a `poster comment` to apply annotations to all items in the file that are documented.
