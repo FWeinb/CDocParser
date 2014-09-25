@@ -1,6 +1,6 @@
 CDocParser
 ---
-CDocParser is a language agnostic C-Style comments parser that uses block comments to make it easier to generate documentation.
+CDocParser is a language agnostic C and `///`-Style comments parser that uses block and line comments to make it easier to generate documentation.
 
 
 ## Install
@@ -30,7 +30,7 @@ console.log(parsedComments);
 
 ### CommentExtractor
 
-The ComemntExtractor is used to extract C-Style comments from source and attach context information to it.
+The ComemntExtractor is used to extract C and `///`-Style comments from source and attach context information to it.
 
 #### `new CommentExtractor(contextParser)`
 
@@ -116,6 +116,11 @@ object will look like:
 Use `mocha test` to run the unit tests.
 
 ## Changelog
+
+#### 0.3.0 
+
+ * Add support for `///` comments 
+ * Add a `lineNumber` function as a second parameter that will convert char indices to line numbers
 
 #### 0.2.2
 
