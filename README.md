@@ -117,6 +117,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.3.1
+ 
+ * Add `allowedOnType` key to annotations to only apply them to comments from a specifc type
+
 #### 0.3.0 
 
  * Add support for `///` comments 

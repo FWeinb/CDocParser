@@ -77,10 +77,6 @@ describe('CDocParser', function(){
 
     var parser;
 
-    beforeEach(function(){
-      parser = new docParser.CommentParser( annotations );
-    });
-
     // Test comments
     var comments = [
       { lines : ['test', 'test', '@test'], context : { type : 'testType1'} },
@@ -120,8 +116,17 @@ describe('CDocParser', function(){
         parse : function(commentLine){
           return commentLine;
         }
+      },
+      allowedLimited : {
+        parse : function(){},
+        allowedOnType : ['workingType']
       }
     };
+
+
+    beforeEach(function(){
+      parser = new docParser.CommentParser( annotations );
+    });
 
 
     describe('#parse', function(){
@@ -200,6 +205,25 @@ describe('CDocParser', function(){
           done();
         });
         var result = parser.parse (comments);
+      });
+
+      it('should emit an warning if not allowed comment type', function(done){
+        parser.on('warning', function(err){
+          assert.equal(err + '', 'Error: Annotation "allowedLimited" is not allowed on comment from type "testType3"');
+          done();
+        });
+        var result = parser.parse ([{
+          lines : ['@allowedLimited'],
+          context : { type : 'testType3'}
+        }]);
+      });
+
+      it('should work on allowed context.type', function(){
+        var result = parser.parse ([{
+          lines : ['@allowedLimited'],
+          context : { type : 'workingType'}
+        }]);
+        assert.deepEqual(result.workingType[0].allowedLimited , []);
       });
 
     });

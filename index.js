@@ -113,6 +113,13 @@ var CommentExtractor = (function () {
 })();
 
 
+var isAnnotationAllowed = function (comment, annotation){
+  if (comment.context.type && Array.isArray(annotation.allowedOnType)) {
+    return annotation.allowedOnType.indexOf(comment.context.type) !== -1;
+  }
+  return true;
+};
+
 /**
  * Capable of parsing comments and resolving @annotations
  */
@@ -136,16 +143,18 @@ var CommentParser = (function(){
       var match = annotationRegex.exec(line);
       if (match) {
         var name = annotations._.alias[match[1]] || match[1]; // Resolve name from alias
+        var annotation = annotations[name];
 
-        if (annotations[name] && annotations[name].parse){
-          var annotationParser = annotations[name].parse; // Get the annotations parser from the annotations map.
+        if (annotation && annotation.parse){
 
-          if (typeof parsedComment[name] === 'undefined') {
-            parsedComment[name] = [];
-          }
+          if (isAnnotationAllowed(comment, annotation)){
+
+            if (typeof parsedComment[name] === 'undefined') {
+              parsedComment[name] = [];
+            }
             // Parse the annotation.
             var content = line.substr(match.index + match[0].length);
-            var result = annotationParser(content.replace(/^[ \t]+|[ \t]+$/g,''));
+            var result = annotation.parse(content.replace(/^[ \t]+|[ \t]+$/g,''));
 
             // If it is a boolean use the annotaion as a flag
             if ( result === false || result === true) {
@@ -153,6 +162,13 @@ var CommentParser = (function(){
             } else if ( result !== undefined ) {
               parsedComment[name].push( result );
             }
+          } else {
+            emitter.emit(
+              'warning',
+              new Error('Annotation "' + name + '" is not allowed on comment from type "' + comment.context.type + '"')
+            );
+          }
+
         } else { 
           emitter.emit('warning', new Error('Parser for annotation `' + match[1] + '` not found.'));
         }
