@@ -119,7 +119,7 @@ describe('CDocParser', function(){
       },
       allowedLimited : {
         parse : function(){},
-        allowedOnType : ['workingType']
+        allowedOn : ['workingType']
       }
     };
 
