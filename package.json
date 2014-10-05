@@ -1,6 +1,6 @@
 {
   "name": "cdocparser",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Extract C style comments and extract context from source",
   "main": "index.js",
   "repository": {
