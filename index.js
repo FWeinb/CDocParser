@@ -120,6 +120,7 @@ var isAnnotationAllowed = function (comment, annotation){
   return true;
 };
 
+
 /**
  * Capable of parsing comments and resolving @annotations
  */
@@ -200,11 +201,16 @@ var CommentParser = (function(){
       });
     }
     // Fill in defaults
-    Object.keys(annotations).forEach(function (key){
-      if ( key !== "_"){
-        var defaultFunc = annotations[key].default;
-        if ( defaultFunc !== undefined && parsedComment[key] === undefined ) {
-          parsedComment[key] = [defaultFunc()];
+    Object.keys(annotations).forEach(function (name){
+      if ( name !== '_' ){
+        var defaultFunc = annotations[name].default;
+        if ( defaultFunc !== undefined &&
+             parsedComment[name] === undefined &&
+             isAnnotationAllowed(comment, annotations[name])) {
+          var defaultValue = defaultFunc(parsedComment);
+          if (defaultValue !== undefined) {
+            parsedComment[name] = [defaultValue];
+          }
         }
       }
     });

@@ -117,6 +117,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.3.4
+
+ * Pass in the parsed item to the `default` function
+
 #### 0.3.3
 
  * Fix a bug with line comments that are indented
