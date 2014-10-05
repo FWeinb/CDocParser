@@ -209,7 +209,11 @@ var CommentParser = (function(){
              isAnnotationAllowed(comment, annotations[name])) {
           var defaultValue = defaultFunc(parsedComment);
           if (defaultValue !== undefined) {
-            parsedComment[name] = [defaultValue];
+            if (Array.isArray(defaultValue)){
+              parsedComment[name] = defaultValue;
+            } else {
+              parsedComment[name] = [defaultValue];
+            }
           }
         }
       }

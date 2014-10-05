@@ -232,6 +232,8 @@ describe('CDocParser', function(){
         assert.deepEqual(result.workingType[0].allowedLimited , []);
       });
 
+
+
     });
   });
 });

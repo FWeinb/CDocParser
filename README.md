@@ -117,6 +117,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.3.5
+
+ * Use raw arrays returned from `default` as value.
+
 #### 0.3.4
 
  * Pass in the parsed item to the `default` function
