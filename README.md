@@ -117,6 +117,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.3.3
+
+ * Fix a bug with line comments that are indented
+
 #### 0.3.2
  
  * Add `allowedOn` key to annotations to only apply them to comments from a specifc type

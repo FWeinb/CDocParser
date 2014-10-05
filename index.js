@@ -11,7 +11,7 @@ var extend = require('lodash.assign');
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var docCommentRegEx = /(?:\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
+  var docCommentRegEx = /(?:[ \t]*\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
 
   /**
    * Generate a function that will index a buffer of text

@@ -56,6 +56,12 @@ describe('CDocParser', function(){
           var comments = getCommentsFrom('lineIndentation.test.scss');
           assert.deepEqual(comments[0].lines, ['', 'test', '   hello', '  world', '']);
         });
+
+        it('should extract line commments with leading spaces', function(){
+          var comments = getCommentsFrom('lineIndentionBefore.test.scss');
+          assert.deepEqual(comments[0].lines, [ 'Just a test', '   ' ]);
+          assert.deepEqual(comments[0].type, 'poster');
+        });
       });
 
       describe('Mixed style comments', function(){
