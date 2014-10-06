@@ -117,6 +117,9 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.3.8
+ 
+  * Add type check for poster comments
 
 #### 0.3.7
 

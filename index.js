@@ -196,8 +196,10 @@ var CommentParser = (function(){
       return null;
     } else {
       // Merge in posterComment annotations and overwrite each annotation of item if it was not set
+      // do it only if the annotation is allowed on the parsedComment.context.type
       Object.keys(posterComment).forEach(function(key){
-        if (parsedComment[key] === undefined){
+        if (parsedComment[key] === undefined &&
+            isAnnotationAllowed(parsedComment, annotations[key])){
           parsedComment[key] = posterComment[key];
         }
       });
