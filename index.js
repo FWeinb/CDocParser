@@ -114,7 +114,9 @@ var CommentExtractor = (function () {
 
 
 var isAnnotationAllowed = function (comment, annotation){
-  if (comment.context.type && Array.isArray(annotation.allowedOn)) {
+  if (comment.type !== 'poster' &&
+      comment.context.type &&
+      Array.isArray(annotation.allowedOn)) {
     return annotation.allowedOn.indexOf(comment.context.type) !== -1;
   }
   return true;

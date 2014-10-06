@@ -117,6 +117,11 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+
+#### 0.3.7
+
+ * Fix broken API in `0.3.5` and `0.3.6`
+
 #### 0.3.5
 
  * Use raw arrays returned from `default` as value.
