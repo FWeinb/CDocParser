@@ -111,11 +111,103 @@ object will look like:
 }
 ```
 
+
+### Annotations API 
+
+The annotations object is build up from two different kind of object. A `annotation` object and a
+`alias`. 
+
+The global strutucture looks like:
+```
+{
+  _ : {
+    [alias object]
+  },
+  [annotation object],
+  [annotation object]
+}
+```
+
+
+### A `annotation` object
+
+#### Overview
+```js
+name : {
+  parse : function(line){
+
+  },
+
+  extend : function(comment){
+
+  },
+  default : function(comment){
+
+  }
+}
+```
+
+Each annotation must have a `parse` method, optionnally you can have a `default` and `extend` methods.
+
+#### `parse` method 
+The `parse` method is used to parse the actuall `string` after the `@name`. All values returned from that method
+will be wrapped in an array.
+
+##### Example:
+Implementing a `name` annotation:
+
+```js
+/**
+ * @name Fabrice Weinberg 
+ */
+```
+
+```js
+function(line){
+  return {
+    name : line
+  }
+}
+```
+
+#### `default` method 
+The `default` method is used to add a default value.
+
+##### Example:
+```js
+function(comment){
+  return [{
+    name : 'Default Name'
+  }]
+}
+```
+> Note: Please keep in mind that you need to wrap values in an Array to align with hand written annotations
+
+
+#### `extend` method 
+The `extend` method is used to extend hand written annotations by autofilled ones. 
+
+##### Example:
+```js
+function(comment){
+  // Access the parsed comment here. 
+}
+```
+
+> Note: Extended annotations can be disabled by using the `@allowExtend` annotation.
+
+
 ## Development
 
 Use `mocha test` to run the unit tests.
 
 ## Changelog
+
+#### 0.4.0
+  
+  * Add `extend` as an annotation feature.
+  * Remove the array wrapping of `default` values. 
+  * Always have a `@allowExtend` annotation that is used to enable extending on a per annotation feature
 
 #### 0.3.8
  
