@@ -110,7 +110,7 @@ describe('CDocParser', function(){
           return "Working";
         },
         default : function(){
-          return "Default";
+          return ["Default"];
         }
       },
       flag : {
@@ -232,6 +232,62 @@ describe('CDocParser', function(){
         assert.deepEqual(result.workingType[0].allowedLimited , []);
       });
 
+      describe('# Default and extended values', function(){
+        beforeEach(function(){
+          parser = new docParser.CommentParser({
+            _ : {
+              alias : {},
+            },
+            test : {
+              parse : function(line){
+                return line;
+              },
+              default : function(parsedComment){
+                return ['default'];
+              },
+              extend : function(parsedComment){
+                parsedComment.test.push('extended');
+              }
+            }
+          });
+        });
+
+        it('should extend correctly', function(){
+
+          var extendedResult = parser.parse ([{
+            lines : ['@test hello'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.deepEqual(extendedResult.demo[0].test, ['hello', 'extended']);
+
+
+          var defaultResult = parser.parse ([{
+            lines : ['Just a description'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.deepEqual(defaultResult.demo[0].test, ['default', 'extended']);
+
+        });
+
+        it('should respsect @autofill', function(){
+          var autofillResult = parser.parse ([{
+            lines : ['@autofill none', 'Just a description'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.deepEqual(autofillResult.demo[0].test, ['default']);
+
+          var autofillTestResult = parser.parse ([{
+            lines : ['@autofill test', 'Just a description'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.deepEqual(autofillTestResult.demo[0].test, ['default', 'extended']);
+        });
+
+      });
 
 
     });
