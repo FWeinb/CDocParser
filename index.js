@@ -122,6 +122,10 @@ var isAnnotationAllowed = function (comment, annotation){
   return true;
 };
 
+var shouldAutofill = function(name, comment){
+  return !comment.allowExtend || comment.allowExtend[0].indexOf(name) > -1;
+};
+
 
 /**
  * Capable of parsing comments and resolving @annotations
@@ -132,6 +136,12 @@ var CommentParser = (function(){
   function CommentParser (annotations) {
     EventEmitter.call(this);
     this.annotations = annotations;
+    // Always add the autofill annotation
+    this.annotations.autofill = {
+      parse : function(text){
+        return text.split(' ');
+      }
+    };
   }
 
   util.inherits(CommentParser, EventEmitter);
@@ -208,12 +218,22 @@ var CommentParser = (function(){
     Object.keys(annotations).forEach(function (name){
       if ( name !== '_' ){
         var defaultFunc = annotations[name].default;
-        if ( defaultFunc !== undefined &&
-             parsedComment[name] === undefined &&
-             isAnnotationAllowed(comment, annotations[name])) {
-          var defaultValue = defaultFunc(parsedComment);
-          if (defaultValue !== undefined) {
-            parsedComment[name] = [defaultValue];
+        var extendFunc = annotations[name].extend;
+        if ( isAnnotationAllowed(comment, annotations[name]) ) {
+
+          // Only use default if user hasn't used annotation
+          if (defaultFunc && parsedComment[name] === undefined ) {
+            var defaultValue = defaultFunc(parsedComment);
+            if (defaultValue !== undefined) {
+              parsedComment[name] = defaultValue;
+            }
+          }
+
+          if (extendFunc && shouldAutofill(name, parsedComment)) {
+            var extendedValue = extendFunc(parsedComment);
+            if (extendedValue !== undefined) {
+              parsedComment[name] = extendedValue;
+            }
           }
         }
       }
