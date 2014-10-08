@@ -71,7 +71,7 @@ This method will return an Array of all comments in the form of
 
 ### CommentParser
 
-#### `new CommentParser(annotations)`
+#### `new CommentParser(annotations, config)`
 
 Create a new `CommentParser` where `annotaions` is an object like:
 ```js
@@ -207,7 +207,6 @@ Use `mocha test` to run the unit tests.
   
   * Add `extend` as an annotation feature.
   * Remove the array wrapping of `default` values. 
-  * Always have a `@allowExtend` annotation that is used to enable extending on a per annotation feature
 
 #### 0.3.8
  
