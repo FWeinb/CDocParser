@@ -233,26 +233,26 @@ describe('CDocParser', function(){
       });
 
       describe('# Default and extended values', function(){
-        beforeEach(function(){
-          parser = new docParser.CommentParser({
-            _ : {
-              alias : {},
+        var annotations = {
+          _ : {
+            alias : {},
+          },
+          test : {
+            parse : function(line){
+              return line;
             },
-            test : {
-              parse : function(line){
-                return line;
-              },
-              default : function(parsedComment){
-                return ['default'];
-              },
-              extend : function(parsedComment){
-                parsedComment.test.push('extended');
-              }
+            default : function(parsedComment){
+              return ['default'];
+            },
+            autofill : function(parsedComment){
+              parsedComment.test.push('extended');
             }
-          });
-        });
+          }
+        };
 
         it('should extend correctly', function(){
+
+          parser = new docParser.CommentParser(annotations);
 
           var extendedResult = parser.parse ([{
             lines : ['@test hello'],
@@ -271,20 +271,43 @@ describe('CDocParser', function(){
 
         });
 
-        it('should respsect @autofill', function(){
-          var autofillResult = parser.parse ([{
-            lines : ['@autofill none', 'Just a description'],
+        it('should respect the config', function(){
+
+          parser = new docParser.CommentParser(annotations, {
+            autofill : true
+          });
+
+          var extendedResult = parser.parse ([{
+            lines : ['@test hello'],
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(autofillResult.demo[0].test, ['default']);
+          assert.deepEqual(extendedResult.demo[0].test, ['hello', 'extended']);
 
-          var autofillTestResult = parser.parse ([{
-            lines : ['@autofill test', 'Just a description'],
+
+          parser = new docParser.CommentParser(annotations, {
+            autofill : false
+          });
+
+          var defaultResult = parser.parse ([{
+            lines : ['Just a description'],
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(autofillTestResult.demo[0].test, ['default', 'extended']);
+          assert.deepEqual(defaultResult.demo[0].test, ['default']);
+
+
+          parser = new docParser.CommentParser(annotations, {
+            autofill : ['test']
+          });
+
+          var defaultTestResult = parser.parse ([{
+            lines : ['Just a description'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.deepEqual(defaultTestResult.demo[0].test, ['default', 'extended']);
+
         });
 
       });
