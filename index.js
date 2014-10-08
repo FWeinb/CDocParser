@@ -122,8 +122,14 @@ var isAnnotationAllowed = function (comment, annotation){
   return true;
 };
 
-var shouldAutofill = function(name, comment){
-  return !comment.allowExtend || comment.allowExtend[0].indexOf(name) > -1;
+var shouldAutofill = function(name, config){
+  if (config.autofill === undefined || config.autofill === true ){
+    return true;
+  }
+  if (Array.isArray(config.autofill)){
+    return config.autofill.indexOf(name) !== -1;
+  }
+  return false;
 };
 
 
@@ -133,20 +139,15 @@ var shouldAutofill = function(name, comment){
 var CommentParser = (function(){
   var annotationRegex = /^@(\w+)/;
 
-  function CommentParser (annotations) {
+  function CommentParser (annotations, config) {
     EventEmitter.call(this);
     this.annotations = annotations;
-    // Always add the autofill annotation
-    this.annotations.autofill = {
-      parse : function(text){
-        return text.split(' ');
-      }
-    };
+    this.config = config || {};
   }
 
   util.inherits(CommentParser, EventEmitter);
 
-  var parseComment = function (comment, annotations, emitter, posterComment) {
+  var parseComment = function (comment, annotations, posterComment) {
     var parsedComment = {
       description: '',
       context: comment.context
@@ -176,21 +177,21 @@ var CommentParser = (function(){
               parsedComment[name].push( result );
             }
           } else {
-            emitter.emit(
+            this.emit(
               'warning',
               new Error('Annotation "' + name + '" is not allowed on comment from type "' + comment.context.type + '"')
             );
           }
 
         } else { 
-          emitter.emit('warning', new Error('Parser for annotation `' + match[1] + '` not found.'));
+          this.emit('warning', new Error('Parser for annotation `' + match[1] + '` not found.'));
         }
       }
 
       else {
         parsedComment.description += line + '\n';
       }
-    });
+    }, this);
 
 
 
@@ -200,7 +201,7 @@ var CommentParser = (function(){
       if (Object.keys(posterComment).length === 0){
         extend(posterComment, parsedComment);
       } else {
-        emitter.emit('warning', new Error('You can\'t have more than one poster comment.'));
+        this.emit('warning', new Error('You can\'t have more than one poster comment.'));
       }
       // Don't add poster comments to the output
       return null;
@@ -218,7 +219,7 @@ var CommentParser = (function(){
     Object.keys(annotations).forEach(function (name){
       if ( name !== '_' ){
         var defaultFunc = annotations[name].default;
-        var extendFunc = annotations[name].extend;
+        var autofillFunc = annotations[name].autofill;
         if ( isAnnotationAllowed(comment, annotations[name]) ) {
 
           // Only use default if user hasn't used annotation
@@ -229,15 +230,15 @@ var CommentParser = (function(){
             }
           }
 
-          if (extendFunc && shouldAutofill(name, parsedComment)) {
-            var extendedValue = extendFunc(parsedComment);
-            if (extendedValue !== undefined) {
-              parsedComment[name] = extendedValue;
+          if (autofillFunc && shouldAutofill(name, this.config)) {
+            var autofillValue = autofillFunc(parsedComment);
+            if (autofillValue !== undefined) {
+              parsedComment[name] = autofillValue;
             }
           }
         }
       }
-    });
+    }, this);
 
     return parsedComment;
   };
@@ -249,9 +250,10 @@ var CommentParser = (function(){
   CommentParser.prototype.parse = function (comments) {
     var result = {};
     var posterComment = {};
+    var thisParseComment = parseComment.bind(this);
 
     comments.forEach(function (comment) {
-      var parsedComment = parseComment(comment, this.annotations, this, posterComment);
+      var parsedComment = thisParseComment(comment, this.annotations, posterComment);
       if (parsedComment !== null){
         var type = comment.context.type;
         if (typeof result[type] === 'undefined') {
