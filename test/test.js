@@ -235,7 +235,9 @@ describe('CDocParser', function(){
       describe('# Default and extended values', function(){
         var annotations = {
           _ : {
-            alias : {},
+            alias : {
+              otherName : 'test'
+            }
           },
           test : {
             parse : function(line){
@@ -307,6 +309,17 @@ describe('CDocParser', function(){
           }]);
 
           assert.deepEqual(defaultTestResult.demo[0].test, ['default', 'extended']);
+
+          parser = new docParser.CommentParser(annotations, {
+            autofill : ['otherName']
+          });
+
+          var otherNameResult = parser.parse ([{
+            lines : ['Just a description'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.deepEqual(otherNameResult.demo[0].test, ['default', 'extended']);
 
         });
 
