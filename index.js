@@ -112,7 +112,6 @@ var CommentExtractor = (function () {
   return CommentExtractor;
 })();
 
-
 var isAnnotationAllowed = function (comment, annotation){
   if (comment.type !== 'poster' &&
       comment.context.type &&
@@ -142,7 +141,15 @@ var CommentParser = (function(){
   function CommentParser (annotations, config) {
     EventEmitter.call(this);
     this.annotations = annotations;
+
     this.config = config || {};
+
+    // Translate autofill from alias to real names.
+    if (Array.isArray(this.config.autofill)){
+      this.config.autofill = this.config.autofill.map(function(name){
+        return annotations._.alias[name] || name;
+      });
+    }
   }
 
   util.inherits(CommentParser, EventEmitter);
