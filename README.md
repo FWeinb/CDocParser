@@ -138,7 +138,7 @@ name : {
 
   },
 
-  extend : function(comment){
+  autofill : function(comment){
 
   },
   default : function(comment){
@@ -184,8 +184,8 @@ function(comment){
 > Note: Please keep in mind that you need to wrap values in an Array to align with hand written annotations
 
 
-#### `extend` method 
-The `extend` method is used to extend hand written annotations by autofilled ones. 
+#### `autofill` method 
+The `autofill` method is used to extend hand written annotations by autofilled ones. 
 
 ##### Example:
 ```js
@@ -205,7 +205,7 @@ Use `mocha test` to run the unit tests.
 
 #### 0.4.0
   
-  * Add `extend` as an annotation feature.
+  * Add `autofill` as an annotation feature.
   * Remove the array wrapping of `default` values. 
 
 #### 0.3.8
