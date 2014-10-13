@@ -131,6 +131,13 @@ var shouldAutofill = function(name, config){
   return false;
 };
 
+var isMultiple = function(annotation){
+  return annotation.multiple === undefined || annotation.multiple === true;
+};
+
+var getContent = function(line, match){
+  return line.substr(match.index + match[0].length).replace(/^[ \t]+|[ \t]+$/g,'');
+};
 
 /**
  * Capable of parsing comments and resolving @annotations
@@ -170,18 +177,31 @@ var CommentParser = (function(){
 
           if (isAnnotationAllowed(comment, annotation)){
 
-            if (typeof parsedComment[name] === 'undefined') {
-              parsedComment[name] = [];
-            }
-            // Parse the annotation.
-            var content = line.substr(match.index + match[0].length);
-            var result = annotation.parse(content.replace(/^[ \t]+|[ \t]+$/g,''));
+            var allowMultiple = isMultiple(annotation);
 
-            // If it is a boolean use the annotaion as a flag
-            if ( result === false || result === true) {
-              parsedComment[name] = result;
-            } else if ( result !== undefined ) {
-              parsedComment[name].push( result );
+            if (allowMultiple){
+
+              if (typeof parsedComment[name] === 'undefined') {
+                parsedComment[name] = [];
+              }
+
+              // Parse the annotation.
+              var result = annotation.parse(getContent(line, match));
+
+              // If it is a boolean use the annotaion as a flag
+              if ( result === false || result === true) {
+                parsedComment[name] = result;
+              } else if ( result !== undefined ) {
+                parsedComment[name].push( result );
+              }
+
+            } else if (typeof parsedComment[name] === 'undefined'){
+              parsedComment[name] = annotation.parse(getContent(line, match));
+            } else {
+              this.emit(
+                'warning',
+                new Error('Annotation "'+ name + '" is only allowed once per comment, second value will be ignored.')
+              );
             }
           } else {
             this.emit(
@@ -193,9 +213,7 @@ var CommentParser = (function(){
         } else { 
           this.emit('warning', new Error('Parser for annotation `' + match[1] + '` not found.'));
         }
-      }
-
-      else {
+      } else {
         parsedComment.description += line + '\n';
       }
     }, this);

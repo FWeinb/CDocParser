@@ -232,6 +232,54 @@ describe('CDocParser', function(){
         assert.deepEqual(result.workingType[0].allowedLimited , []);
       });
 
+
+      describe('# multiple true/false', function(){
+        beforeEach(function(){
+          var annotations = {
+            _ : {
+              alias : { }
+            },
+            test : {
+              parse : function(line){
+                return line;
+              },
+              multiple : false
+            }
+          };
+
+
+          parser = new docParser.CommentParser(annotations);
+        });
+
+        it('should work for false', function(){
+
+          var rawTestResult = parser.parse ([{
+            lines : ['@test Hello'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.equal(rawTestResult.demo[0].test, 'Hello');
+
+        });
+
+        it('should warn if used multiple times', function(done){
+
+          parser.on('warning', function(err){
+            assert.equal(err + '', 'Error: Annotation "test" is only allowed once per comment, second value will be ignored.');
+            done();
+          });
+
+          var rawTestResult = parser.parse ([{
+            lines : ['@test First', '@test Second'],
+            context : { type : 'demo' }
+          }]);
+
+          assert.equal(rawTestResult.demo[0].test, 'First');
+
+        });
+
+      });
+
       describe('# Default and extended values', function(){
         var annotations = {
           _ : {

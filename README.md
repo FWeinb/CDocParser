@@ -141,13 +141,16 @@ name : {
   autofill : function(comment){
 
   },
+
   default : function(comment){
 
-  }
+  },
+
+  multiple : true
 }
 ```
 
-Each annotation must have a `parse` method, optionnally you can have a `default` and `extend` methods.
+Each annotation must have a `parse` method, optionaly you can have a `default` and `extend` methods. The optional `multiple` key is used to indicate if an annotation can be used mutliple times.
 
 #### `parse` method 
 The `parse` method is used to parse the actuall `string` after the `@name`. All values returned from that method
@@ -197,11 +200,21 @@ function(comment){
 > Note: Extended annotations can be disabled by using the `@allowExtend` annotation.
 
 
+#### `multiple` key
+
+The `multiple` key is used to determin if this can be used mutliple times per comment. 
+
+> Note: A warning will be emitted if a annotation is used more than once. Only the first value is used. 
+
 ## Development
 
 Use `mocha test` to run the unit tests.
 
 ## Changelog
+
+#### 0.5.0
+
+ * Add `multiple` key, to indicate if a annoation can be used more than once per comment.
 
 #### 0.4.0
   
