@@ -106,7 +106,6 @@ var CommentExtractor = (function () {
       comments.push({
         lines: lines,
         type: commentType,
-        matchIndex: matchIndex,
         lineNumberRange: [startLineNumber, endLineNumber],
         context: this.parseContext(code.substr(matchIndex), lineNumberWithOffsetFor)
       });
