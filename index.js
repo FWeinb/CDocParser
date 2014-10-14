@@ -99,9 +99,15 @@ var CommentExtractor = (function () {
         return lineNumberFor(matchIndex + offset);
       };
 
+      var newlinesInComment = match[0].slice(0, -1).split('\n').length;
+      var startLineNumber = code.substr(0, match.index).split('\n').length;
+      var endLineNumber = startLineNumber + newlinesInComment - 1;
+
       comments.push({
         lines: lines,
         type: commentType,
+        matchIndex: matchIndex,
+        lineNumberRange: [startLineNumber, endLineNumber],
         context: this.parseContext(code.substr(matchIndex), lineNumberWithOffsetFor)
       });
     }
