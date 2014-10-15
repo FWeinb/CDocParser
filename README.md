@@ -214,6 +214,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.6.0
+  
+  * Include line numbers in each found comment block. (See [PR#6](https://github.com/FWeinb/CDocParser/pull/5))
+
 #### 0.5.0
 
  * Add `multiple` key, to indicate if a annoation can be used more than once per comment.
