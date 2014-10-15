@@ -10,6 +10,14 @@ describe('CDocParser', function(){
     return extractor.extract(fs.readFileSync(__dirname + '/fixtures/'+file, 'utf-8'));
   };
 
+  describe('Index', function(){
+    it('should index the offsets of the start of each line', function(){
+      var index = docParser.createIndex(fs.readFileSync(__dirname + '/fixtures/block.test.scss', 'utf-8'));
+      assert.equal(index[0], 0, 'First line starts at offset 0');
+      assert.equal(index[4], 1, 'Second line starts at offset 4');
+    });
+  });
+
   describe('CommentExtractor', function(){
     describe('#extract', function(){
       describe('Block comments', function(){
