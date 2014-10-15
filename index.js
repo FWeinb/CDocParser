@@ -16,7 +16,8 @@ function createIndex (buffer) {
 
   for (var i = 0, length = buffer.length, line = 1; i < length; i++) {
     if (buffer[i] === '\n') {
-      indexData[i + 1] = ++line;
+      indexData[i + 1] = line;
+      line += 1;
     }
   }
 
