@@ -27,9 +27,9 @@ describe('CDocParser', function(){
           assert.equal(comments[0].lines.length, 3);
           assert.equal(comments[0].context.type, 'testCtx');
           assert.deepEqual(comments[0].lines, ['', 'Block comment test', '']);
-          assert.deepEqual(comments[0].lineNumberRange, [1, 5]);
+          assert.deepEqual(comments[0].commentRange, { start: 1, end: 5 });
           assert.deepEqual(comments[1].lines, ['', 'Block comment test 2', '']);
-          assert.deepEqual(comments[1].lineNumberRange, [7, 11]);
+          assert.deepEqual(comments[1].commentRange, { start: 7, end: 11 });
         });
 
         it('should not split every "*"', function(){
@@ -53,9 +53,9 @@ describe('CDocParser', function(){
           var comments = getCommentsFrom('line.test.scss');
           assert.equal(comments.length, 2);
           assert.deepEqual(comments[0].lines, ['More', '', 'than', 'one', 'line']);
-          assert.deepEqual(comments[0].lineNumberRange, [1, 5]);
+          assert.deepEqual(comments[0].commentRange, { start: 1, end: 5 });
           assert.deepEqual(comments[1].lines, ['More', 'than', 'one','comment']);
-          assert.deepEqual(comments[1].lineNumberRange, [7, 10]);
+          assert.deepEqual(comments[1].commentRange, { start: 7, end: 10 });
         });
 
         it('should ignore block comments in line comments', function(){
@@ -83,7 +83,7 @@ describe('CDocParser', function(){
           assert.deepEqual(comments[0].lines, ['', 'Block comment test', '']);
           assert.deepEqual(comments[1].lines, ['', 'Line comment test', '']);
           assert.deepEqual(comments[2].lines, ['Single line test']);
-          assert.deepEqual(comments[2].lineNumberRange, [14, 14]);
+          assert.deepEqual(comments[2].commentRange, { start: 14, end: 14 });
         });
       });
 
