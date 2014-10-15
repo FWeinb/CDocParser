@@ -97,13 +97,13 @@ var CommentExtractor = (function () {
     var lineNumberFor = index(code);
 
     while ( (match = docCommentRegEx.exec(code)) ) {
-      var commentType = 'normal';
+      var commentType = 'block'; // Defaults to block comment
       var lines;
       // Detect if line comment or block comment
       if (match[1] === undefined){
         var lineObj = cleanLineComments(match[0]);
         lines = lineObj.lines;
-        commentType = lineObj.type || commentType;
+        commentType = lineObj.type || 'line';
       } else {
         lines = cleanBlockComment(match[1]);
         // If there are more than one stare
