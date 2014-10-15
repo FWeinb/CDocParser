@@ -41,11 +41,16 @@ var CommentExtractor = (function () {
     var indexData = createIndex(buffer);
 
     return function (offset) {
+      // offset 0 will always be the first line
+      if (offset === 0) { return 0; }
+
       // exact match
       if (indexData[offset] !== undefined) { return indexData[offset]; }
 
-      for (var i = offset; i >= 0 && buffer[i] != '\n'; i--);
-      return indexData[i + 1];
+      // step backwards until we find a newline
+      for (var i = offset; i >= 0 && buffer[i-1] != '\n'; i--);
+
+      return indexData[i];
     };
   }
 
@@ -113,9 +118,12 @@ var CommentExtractor = (function () {
         return lineNumberFor(matchIndex + offset);
       };
 
-      // Add 1 to start line so we get 1-based values.
+      // Exclude the final character as sometimes it will be a newline
+      var endOffset = match.index + match[0].length - 1;
+
+      // Add 1 so we get 1-based values.
       var startLineNumber = lineNumberFor(match.index) + 1;
-      var endLineNumber = lineNumberFor(match.index + match[0].length);
+      var endLineNumber = lineNumberFor(endOffset) + 1;
 
       comments.push({
         lines: lines,
