@@ -25,11 +25,20 @@ var CommentExtractor = (function () {
 
     for (var i = 0, length = buffer.length, line = 1; i < length; i++) {
       if (buffer[i] === '\n') {
-        indexData[i + 1] = ++line;
+        indexData[i + 1] = line;
+        line += 1;
       }
     }
 
+    // final line may not end with a \n
+    if (buffer[buffer.length-1] !== '\n') {
+      indexData[i] = line;
+    }
+
     return function (offset) {
+      // exact match
+      if (indexData[offset] !== undefined) { return indexData[offset]; }
+
       for (var i = offset; i >= 0 && buffer[i] != '\n'; i--);
       return indexData[i + 1];
     };
@@ -99,14 +108,17 @@ var CommentExtractor = (function () {
         return lineNumberFor(matchIndex + offset);
       };
 
-      var newlinesInComment = match[0].slice(0, -1).split('\n').length;
-      var startLineNumber = code.substr(0, match.index).split('\n').length;
-      var endLineNumber = startLineNumber + newlinesInComment - 1;
+      // Add 1 to start line so we get 1-based values.
+      var startLineNumber = lineNumberFor(match.index) + 1;
+      var endLineNumber = lineNumberFor(match.index + match[0].length);
 
       comments.push({
         lines: lines,
         type: commentType,
-        lineNumberRange: [startLineNumber, endLineNumber],
+        commentRange: {
+          start: startLineNumber,
+          end: endLineNumber
+        },
         context: this.parseContext(code.substr(matchIndex), lineNumberWithOffsetFor)
       });
     }
