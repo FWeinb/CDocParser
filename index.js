@@ -5,7 +5,23 @@ var util = require('util');
 var stripIndent = require('strip-indent');
 var extend = require('lodash.assign');
 
+/**
+ * Index a buffer of text to give the byte offset for each line.
+ *
+ * @param {String} buffer
+ * @return {Object} index
+ */
+function createIndex (buffer) {
+  var indexData = {0: 0};
 
+  for (var i = 0, length = buffer.length, line = 1; i < length; i++) {
+    if (buffer[i] === '\n') {
+      indexData[i + 1] = ++line;
+    }
+  }
+
+  return indexData;
+}
 
 /**
  * Extract all C-Style comments from the input code
@@ -21,13 +37,7 @@ var CommentExtractor = (function () {
    * @return {Function} Function that translates an char index to line number
    */
   function index(buffer) {
-    var indexData = {0: 0};
-
-    for (var i = 0, length = buffer.length, line = 1; i < length; i++) {
-      if (buffer[i] === '\n') {
-        indexData[i + 1] = ++line;
-      }
-    }
+    var indexData = createIndex(buffer);
 
     return function (offset) {
       for (var i = offset; i >= 0 && buffer[i] != '\n'; i--);
@@ -298,3 +308,4 @@ var CommentParser = (function(){
 
 module.exports.CommentParser = CommentParser;
 module.exports.CommentExtractor = CommentExtractor;
+module.exports.createIndex = createIndex;
