@@ -81,10 +81,10 @@ var CommentExtractor = (function () {
     return stripIndent(removeLeadingStar).split(/\n/);
   };
 
-  var cleanLineComments = function (comment) {
+  var cleanLineComments = function (comment, lineCommentStyle) {
     var type;
-    var lines = comment.split(/[\/]{2,}/);
-        lines.shift();
+    var lines = comment.split(new RegExp('[\\/]{' + lineCommentStyle.length + ',}'));
+    lines.shift();
 
     if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
       lines.shift(); // Remove line with stars
@@ -106,10 +106,11 @@ var CommentExtractor = (function () {
     this.parseContext = parseContext;
 
     opts = opts || {};
-    var lineCommentStyle = opts.lineCommentStyle || '///';
-    var blockCommentStyle = opts.blockCommentStyle || '/**';
+    if (!opts.lineCommentStyle) { opts.lineCommentStyle = '///'; }
+    if (!opts.blockCommentStyle) { opts.blockCommentStyle = '/**'; }
 
-    this.docCommentRegEx = createDocCommentRegExp(lineCommentStyle, blockCommentStyle);
+    this.opts = opts;
+    this.docCommentRegEx = createDocCommentRegExp(opts.lineCommentStyle, opts.blockCommentStyle);
   }
 
   /**
@@ -123,12 +124,15 @@ var CommentExtractor = (function () {
 
     var lineNumberFor = index(code);
 
+    // reset
+    this.docCommentRegEx.lastIndex = 0;
+
     while ( (match = this.docCommentRegEx.exec(code)) ) {
       var commentType = 'block'; // Defaults to block comment
       var lines;
       // Detect if line comment or block comment
       if (match[1] === undefined){
-        var lineObj = cleanLineComments(match[0]);
+        var lineObj = cleanLineComments(match[0], this.opts.lineCommentStyle);
         lines = lineObj.lines;
         commentType = lineObj.type || 'line';
       } else {
