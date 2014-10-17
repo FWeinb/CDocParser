@@ -32,7 +32,7 @@ console.log(parsedComments);
 
 The ComemntExtractor is used to extract C and `///`-Style comments from source and attach context information to it.
 
-#### `new CommentExtractor(contextParser)`
+#### `new CommentExtractor(contextParser, [opts])`
 
 Create a CommentExtractor to extract block comment like:
 
@@ -54,6 +54,16 @@ A context obj:
 ```
 
 The `type` attribute is mandatory, you can add as much attributes as you would like.
+
+To support custom comment formats override the regex by setting `docCommentRegEx` in the `opts` argument:
+
+```
+new CommentExtractor(contextParser, {
+  docCommentRegEx: /(?:[ \t]*\/\/.*\S*[\s]?)+$|^[ \t]*\/\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm
+})
+```
+
+The default regex can be found in index.js (`var defaultDocCommentRegEx = ...`).
 
 #### `#extract(code)`
 
