@@ -87,6 +87,26 @@ describe('CDocParser', function(){
         });
       });
 
+      describe('Custom comment regex', function(){
+        it('should extract comments', function (){
+          var extractor = new docParser.CommentExtractor( function (){}, {
+            docCommentRegEx: /(?:[ \t]*\/\/.*\S*[\s]?)+$|^[ \t]*\/\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm
+          });
+
+          var getCommentsFrom = function(file){
+            return extractor.extract(fs.readFileSync(__dirname + '/fixtures/'+file, 'utf-8'));
+          };
+
+          var comments = getCommentsFrom('custom-regex.test.scss');
+
+          assert.equal(comments.length, 2);
+          assert.deepEqual(comments[0].lines, ['', 'Block comment test', '']);
+          assert.deepEqual(comments[0].commentRange, { start: 1, end: 5 });
+
+          assert.deepEqual(comments[1].lines, ['Single line test']);
+          assert.deepEqual(comments[1].commentRange, { start: 7, end: 7 });
+        });
+      });
     });
   });
 

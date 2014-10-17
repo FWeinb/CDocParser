@@ -28,7 +28,7 @@ function createIndex (buffer) {
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var docCommentRegEx = /(?:[ \t]*\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
+  var defaultDocCommentRegEx = /(?:[ \t]*\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
 
   /**
    * Generate a function that will index a buffer of text
@@ -62,7 +62,7 @@ var CommentExtractor = (function () {
 
   var cleanLineComments = function (comment) {
     var type;
-    var lines = comment.split(/[\/]{3,}/);
+    var lines = comment.split(/[\/]{2,}/);
         lines.shift();
 
     if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
@@ -81,8 +81,11 @@ var CommentExtractor = (function () {
     };
   };
 
-  function CommentExtractor (parseContext) {
+  function CommentExtractor (parseContext, opts) {
     this.parseContext = parseContext;
+
+    opts = opts || {};
+    this.docCommentRegEx = opts.docCommentRegEx || defaultDocCommentRegEx;
   }
 
   /**
@@ -96,7 +99,7 @@ var CommentExtractor = (function () {
 
     var lineNumberFor = index(code);
 
-    while ( (match = docCommentRegEx.exec(code)) ) {
+    while ( (match = this.docCommentRegEx.exec(code)) ) {
       var commentType = 'block'; // Defaults to block comment
       var lines;
       // Detect if line comment or block comment
