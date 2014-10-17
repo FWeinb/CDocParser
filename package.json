@@ -17,6 +17,9 @@
     "parse"
   ],
   "author": "Fabrice Weinberg <Fabrice@weinberg.me>",
+  "contributors": [
+    "joshwnj <josh@x-team.com> (http://x-team.com)"
+  ],
   "license": "MIT",
   "devDependencies": {
     "assert": "^1.1.1"
