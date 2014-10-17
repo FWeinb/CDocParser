@@ -83,7 +83,7 @@ var CommentExtractor = (function () {
 
   var cleanLineComments = function (comment, lineCommentStyle) {
     var type;
-    var lines = comment.split(new RegExp('[\\/]{' + lineCommentStyle.length + ',}'));
+    var lines = comment.split(new RegExp(escapeStringRegexp(lineCommentStyle) + '[\\/]*'));
     lines.shift();
 
     if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
