@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var stripIndent = require('strip-indent');
 var extend = require('lodash.assign');
+var escapeStringRegexp = require('escape-string-regexp');
 
 /**
  * Index a buffer of text to give the byte offset for each line.
@@ -28,7 +29,27 @@ function createIndex (buffer) {
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var defaultDocCommentRegEx = /(?:[ \t]*\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
+
+  /**
+   * Create a RegExp to extract comments.
+   *
+   * @param {String} lineCommentStyle Characters we expect to see at the start of a line comment.
+   * @param {String} blockCommentStyle Characters we expect to see at the start of a block comment.
+   * @return {RegExp}
+   */
+  function createDocCommentRegExp (lineCommentStyle, blockCommentStyle) {
+    var linePattern =
+        '(?:[ \\t]*' +
+        escapeStringRegexp(lineCommentStyle) +
+        '.*\\S*[\\s]?)+$';
+
+    var blockPattern =
+        '^[ \\t]*' +
+        escapeStringRegexp(blockCommentStyle) +
+        '((?:[^*]|[\\r\\n]|(?:\\*+(?:[^*/]|[\\r\\n])))*)(\\*+)\\/';
+
+    return new RegExp(linePattern + '|' + blockPattern, 'gm');
+  }
 
   /**
    * Generate a function that will index a buffer of text
@@ -85,7 +106,10 @@ var CommentExtractor = (function () {
     this.parseContext = parseContext;
 
     opts = opts || {};
-    this.docCommentRegEx = opts.docCommentRegEx || defaultDocCommentRegEx;
+    var lineCommentStyle = opts.lineCommentStyle || '///';
+    var blockCommentStyle = opts.blockCommentStyle || '/**';
+
+    this.docCommentRegEx = createDocCommentRegExp(lineCommentStyle, blockCommentStyle);
   }
 
   /**

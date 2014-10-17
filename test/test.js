@@ -90,7 +90,8 @@ describe('CDocParser', function(){
       describe('Custom comment regex', function(){
         it('should extract comments', function (){
           var extractor = new docParser.CommentExtractor( function (){}, {
-            docCommentRegEx: /(?:[ \t]*\/\/.*\S*[\s]?)+$|^[ \t]*\/\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm
+            lineCommentStyle: '//',
+            blockCommentStyle: '/*'
           });
 
           var getCommentsFrom = function(file){

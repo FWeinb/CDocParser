@@ -22,7 +22,8 @@
     "assert": "^1.1.1"
   },
   "dependencies": {
-    "strip-indent": "^0.1.3",
-    "lodash.assign": "^2.4.1"
+    "escape-string-regexp": "^1.0.2",
+    "lodash.assign": "^2.4.1",
+    "strip-indent": "^0.1.3"
   }
 }

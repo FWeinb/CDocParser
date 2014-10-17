@@ -55,11 +55,12 @@ A context obj:
 
 The `type` attribute is mandatory, you can add as much attributes as you would like.
 
-To support custom comment formats override the regex by setting `docCommentRegEx` in the `opts` argument:
+To support custom comment formats set `lineCommentStyle` and/or `blockCommentStyle` in the `opts` argument, shown here with default values:
 
 ```
 new CommentExtractor(contextParser, {
-  docCommentRegEx: /(?:[ \t]*\/\/.*\S*[\s]?)+$|^[ \t]*\/\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm
+  lineCommentStyle: '///',
+  blockCommentStyle: '/**'
 })
 ```
 
