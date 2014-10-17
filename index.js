@@ -52,6 +52,16 @@ var CommentExtractor = (function () {
   }
 
   /**
+   * Create a RegExp for extracting the text of line comments.
+   *
+   * @param {String} lineCommentStyle Characters we expect to see at the start of a line comment.
+   * @return {RegExp}
+   */
+  function createLineCommentRegExp (lineCommentStyle) {
+    return new RegExp(escapeStringRegexp(lineCommentStyle) + '[\\/]*');
+  }
+
+  /**
    * Generate a function that will index a buffer of text
    * and return a line for a specify char index
    *
@@ -81,9 +91,9 @@ var CommentExtractor = (function () {
     return stripIndent(removeLeadingStar).split(/\n/);
   };
 
-  var cleanLineComments = function (comment, lineCommentStyle) {
+  var cleanLineComments = function (comment, lineCommentRegExp) {
     var type;
-    var lines = comment.split(new RegExp(escapeStringRegexp(lineCommentStyle) + '[\\/]*'));
+    var lines = comment.split(lineCommentRegExp);
     lines.shift();
 
     if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
@@ -111,6 +121,7 @@ var CommentExtractor = (function () {
 
     this.opts = opts;
     this.docCommentRegEx = createDocCommentRegExp(opts.lineCommentStyle, opts.blockCommentStyle);
+    this.lineCommentRegEx = createLineCommentRegExp(opts.lineCommentStyle);
   }
 
   /**
@@ -132,7 +143,7 @@ var CommentExtractor = (function () {
       var lines;
       // Detect if line comment or block comment
       if (match[1] === undefined){
-        var lineObj = cleanLineComments(match[0], this.opts.lineCommentStyle);
+        var lineObj = cleanLineComments(match[0], this.lineCommentRegEx);
         lines = lineObj.lines;
         commentType = lineObj.type || 'line';
       } else {
