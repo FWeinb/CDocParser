@@ -100,7 +100,7 @@ describe('CDocParser', function(){
           var comments = getCommentsFrom('custom-regex.test.scss');
 
           assert.equal(comments.length, 2);
-          assert.deepEqual(comments[0].lines, ['', 'Block comment test', '']);
+          assert.deepEqual(comments[0].lines, ['Block comment test', '']);
           assert.deepEqual(comments[0].commentRange, { start: 1, end: 5 });
 
           assert.deepEqual(comments[1].lines, ['Single line test']);
