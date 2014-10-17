@@ -225,6 +225,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.8.0
+
+  * Add the ability to specify `lineCommentStyle` and `blockCommentStyle`. (See [PR#8](https://github.com/FWeinb/CDocParser/pull/8))
+
 #### 0.7.0
 
   * Extend `type` key of each comment to differentiate between `line` and `block`. 
