@@ -1,6 +1,6 @@
 {
   "name": "cdocparser",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Extract C style comments and extract context from source",
   "main": "index.js",
   "repository": {
@@ -17,12 +17,16 @@
     "parse"
   ],
   "author": "Fabrice Weinberg <Fabrice@weinberg.me>",
+  "contributors": [
+    "joshwnj <josh@x-team.com> (http://x-team.com)"
+  ],
   "license": "MIT",
   "devDependencies": {
     "assert": "^1.1.1"
   },
   "dependencies": {
-    "strip-indent": "^0.1.3",
-    "lodash.assign": "^2.4.1"
+    "escape-string-regexp": "^1.0.2",
+    "lodash.assign": "^2.4.1",
+    "strip-indent": "^0.1.3"
   }
 }

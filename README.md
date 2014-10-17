@@ -32,7 +32,7 @@ console.log(parsedComments);
 
 The ComemntExtractor is used to extract C and `///`-Style comments from source and attach context information to it.
 
-#### `new CommentExtractor(contextParser)`
+#### `new CommentExtractor(contextParser, [opts])`
 
 Create a CommentExtractor to extract block comment like:
 
@@ -55,6 +55,17 @@ A context obj:
 
 The `type` attribute is mandatory, you can add as much attributes as you would like.
 
+To support custom comment formats set `lineCommentStyle` and/or `blockCommentStyle` in the `opts` argument, shown here with default values:
+
+```
+new CommentExtractor(contextParser, {
+  lineCommentStyle: '///',
+  blockCommentStyle: '/**'
+})
+```
+
+The default regex can be found in index.js (`var defaultDocCommentRegEx = ...`).
+
 #### `#extract(code)`
 
 This method will return an Array of all comments in the form of
@@ -75,7 +86,7 @@ This method will return an Array of all comments in the form of
 
 #### `new CommentParser(annotations, config)`
 
-Create a new `CommentParser` where `annotaions` is an object like:
+Create a new `CommentParser` where `annotations` is an object like:
 ```js
 {
   _: {
@@ -119,7 +130,7 @@ object will look like:
 The annotations object is build up from two different kind of object. A `annotation` object and a
 `alias`. 
 
-The global strutucture looks like:
+The global structure looks like:
 ```
 {
   _ : {
@@ -152,10 +163,10 @@ name : {
 }
 ```
 
-Each annotation must have a `parse` method, optionaly you can have a `default` and `extend` methods. The optional `multiple` key is used to indicate if an annotation can be used mutliple times.
+Each annotation must have a `parse` method, optionally you can have a `default` and `extend` methods. The optional `multiple` key is used to indicate if an annotation can be used multiple times.
 
-#### `parse` method 
-The `parse` method is used to parse the actuall `string` after the `@name`. All values returned from that method
+#### `parse` method
+The `parse` method is used to parse the actual `string` after the `@name`. All values returned from that method
 will be wrapped in an array.
 
 ##### Example:
@@ -204,7 +215,7 @@ function(comment){
 
 #### `multiple` key
 
-The `multiple` key is used to determin if this can be used mutliple times per comment. 
+The `multiple` key is used to determine if this can be used mutliple times per comment.
 
 > Note: A warning will be emitted if a annotation is used more than once. Only the first value is used. 
 
@@ -224,7 +235,7 @@ Use `mocha test` to run the unit tests.
 
 #### 0.5.0
 
- * Add `multiple` key, to indicate if a annoation can be used more than once per comment.
+ * Add `multiple` key, to indicate if a annotation can be used more than once per comment.
 
 #### 0.4.0
   
@@ -252,12 +263,12 @@ Use `mocha test` to run the unit tests.
  * Fix a bug with line comments that are indented
 
 #### 0.3.2
- 
- * Add `allowedOn` key to annotations to only apply them to comments from a specifc type
 
-#### 0.3.0 
+ * Add `allowedOn` key to annotations to only apply them to comments from a specific type
 
- * Add support for `///` comments 
+#### 0.3.0
+
+ * Add support for `///` comments
  * Add a `lineNumber` function as a second parameter that will convert char indices to line numbers
 
 #### 0.2.2

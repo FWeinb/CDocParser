@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var stripIndent = require('strip-indent');
 var extend = require('lodash.assign');
+var escapeStringRegexp = require('escape-string-regexp');
 
 /**
  * Index a buffer of text to give the byte offset for each line.
@@ -28,7 +29,37 @@ function createIndex (buffer) {
  * Extract all C-Style comments from the input code
  */
 var CommentExtractor = (function () {
-  var docCommentRegEx = /(?:[ \t]*\/\/\/.*\S*[\s]?)+$|^[ \t]*\/\*\*((?:[^*]|[\r\n]|(?:\*+(?:[^*/]|[\r\n])))*)(\*+)\//gm;
+
+  /**
+   * Create a RegExp to extract comments.
+   *
+   * @param {String} lineCommentStyle Characters we expect to see at the start of a line comment.
+   * @param {String} blockCommentStyle Characters we expect to see at the start of a block comment.
+   * @return {RegExp}
+   */
+  function createDocCommentRegExp (lineCommentStyle, blockCommentStyle) {
+    var linePattern =
+        '(?:[ \\t]*' +
+        escapeStringRegexp(lineCommentStyle) +
+        '.*\\S*[\\s]?)+$';
+
+    var blockPattern =
+        '^[ \\t]*' +
+        escapeStringRegexp(blockCommentStyle) +
+        '((?:[^*]|[\\r\\n]|(?:\\*+(?:[^*/]|[\\r\\n])))*)(\\*+)\\/';
+
+    return new RegExp(linePattern + '|' + blockPattern, 'gm');
+  }
+
+  /**
+   * Create a RegExp for extracting the text of line comments.
+   *
+   * @param {String} lineCommentStyle Characters we expect to see at the start of a line comment.
+   * @return {RegExp}
+   */
+  function createLineCommentRegExp (lineCommentStyle) {
+    return new RegExp(escapeStringRegexp(lineCommentStyle) + '[\\/]*');
+  }
 
   /**
    * Generate a function that will index a buffer of text
@@ -60,10 +91,10 @@ var CommentExtractor = (function () {
     return stripIndent(removeLeadingStar).split(/\n/);
   };
 
-  var cleanLineComments = function (comment) {
+  var cleanLineComments = function (comment, lineCommentRegExp) {
     var type;
-    var lines = comment.split(/[\/]{3,}/);
-        lines.shift();
+    var lines = comment.split(lineCommentRegExp);
+    lines.shift();
 
     if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
       lines.shift(); // Remove line with stars
@@ -81,8 +112,16 @@ var CommentExtractor = (function () {
     };
   };
 
-  function CommentExtractor (parseContext) {
+  function CommentExtractor (parseContext, opts) {
     this.parseContext = parseContext;
+
+    opts = opts || {};
+    if (!opts.lineCommentStyle) { opts.lineCommentStyle = '///'; }
+    if (!opts.blockCommentStyle) { opts.blockCommentStyle = '/**'; }
+
+    this.opts = opts;
+    this.docCommentRegEx = createDocCommentRegExp(opts.lineCommentStyle, opts.blockCommentStyle);
+    this.lineCommentRegEx = createLineCommentRegExp(opts.lineCommentStyle);
   }
 
   /**
@@ -96,12 +135,15 @@ var CommentExtractor = (function () {
 
     var lineNumberFor = index(code);
 
-    while ( (match = docCommentRegEx.exec(code)) ) {
+    // reset
+    this.docCommentRegEx.lastIndex = 0;
+
+    while ( (match = this.docCommentRegEx.exec(code)) ) {
       var commentType = 'block'; // Defaults to block comment
       var lines;
       // Detect if line comment or block comment
       if (match[1] === undefined){
-        var lineObj = cleanLineComments(match[0]);
+        var lineObj = cleanLineComments(match[0], this.lineCommentRegEx);
         lines = lineObj.lines;
         commentType = lineObj.type || 'line';
       } else {
