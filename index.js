@@ -154,18 +154,17 @@ var CommentExtractor = (function () {
         }
       }
 
-      var matchIndex = match.index + match[0].length;
+      var endOffset = match.index + match[0].length;
 
       var lineNumberWithOffsetFor = function(offset){
-        return lineNumberFor(matchIndex + offset);
+        return lineNumberFor(endOffset + 1 + offset);
       };
-
-      // Exclude the final character as sometimes it will be a newline
-      var endOffset = match.index + match[0].length - 1;
 
       // Add 1 so we get 1-based values.
       var startLineNumber = lineNumberFor(match.index) + 1;
-      var endLineNumber = lineNumberFor(endOffset) + 1;
+
+      // Exclude the final character as sometimes it will be a newline
+      var endLineNumber = lineNumberFor(endOffset - 1) + 1;
 
       comments.push({
         lines: lines,
@@ -174,7 +173,7 @@ var CommentExtractor = (function () {
           start: startLineNumber,
           end: endLineNumber
         },
-        context: this.parseContext(code.substr(matchIndex), lineNumberWithOffsetFor)
+        context: this.parseContext(code.substr(endOffset), lineNumberWithOffsetFor)
       });
     }
 

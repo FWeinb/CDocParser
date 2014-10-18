@@ -225,6 +225,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.8.1
+
+  * Fix regression in `lineNumberFor` reporting wrong line numbers. 
+
 #### 0.8.0
 
   * Add the ability to specify `lineCommentStyle` and `blockCommentStyle`. (See [PR#8](https://github.com/FWeinb/CDocParser/pull/8))
@@ -273,7 +277,7 @@ Use `mocha test` to run the unit tests.
 #### 0.3.0
 
  * Add support for `///` comments
- * Add a `lineNumber` function as a second parameter that will convert char indices to line numbers
+ * Add a `lineNumberFor` function as a second parameter that will convert char indices to line numbers
 
 #### 0.2.2
 
