@@ -235,6 +235,7 @@ var CommentParser = (function(){
   var parseComment = function (comment, annotations, posterComment) {
     var parsedComment = {
       description: '',
+      commentRange: comment.commentRange,
       context: comment.context
     };
 

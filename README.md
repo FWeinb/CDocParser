@@ -225,6 +225,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.9.0
+
+  * Include `commentRange` in object returned by the annotation parser.
+
 #### 0.8.1
 
   * Fix regression in `lineNumberFor` reporting wrong line numbers. 
