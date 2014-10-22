@@ -79,7 +79,7 @@ var CommentExtractor = (function () {
       if (indexData[offset] !== undefined) { return indexData[offset]; }
 
       // step backwards until we find a newline
-      for (var i = offset; i >= 0 && buffer[i-1] != '\n'; i--);
+      for (var i = offset; i > 0 && buffer[i-1] != '\n'; i--);
 
       return indexData[i];
     };
