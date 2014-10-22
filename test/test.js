@@ -87,6 +87,15 @@ describe('CDocParser', function(){
         });
       });
 
+      describe('Block comment spanning a single line', function(){
+        it('should extract comments', function (){
+          var comments = getCommentsFrom('singleLineBlock.test.scss');
+          assert.equal(comments.length, 1);
+          assert.deepEqual(comments[0].lines, ['block comment on a single line']);
+          assert.deepEqual(comments[0].commentRange, { start: 1, end: 1 });
+        });
+      });
+
       describe('Custom comment regex', function(){
         it('should extract comments', function (){
           var extractor = new docParser.CommentExtractor( function (){}, {
