@@ -227,6 +227,7 @@ Use `mocha test` to run the unit tests.
 
 #### 0.9.1
 
+  * Prevent negative indexes. (See [PR#10](https://github.com/FWeinb/CDocParser/pull/10)) 
   * Unify error messages. 
 
 #### 0.9.0
