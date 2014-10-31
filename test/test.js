@@ -250,7 +250,7 @@ describe('CDocParser', function(){
 
       it('should emit an warning if not allowed comment type', function(done){
         parser.on('warning', function(err){
-          assert.equal(err + '', 'Error: Annotation "allowedLimited" is not allowed on comment from type "testType3"');
+          assert.equal(err + '', 'Error: Annotation `allowedLimited` is not allowed on comment from type `testType3`.');
           done();
         });
         var result = parser.parse ([{
@@ -300,7 +300,7 @@ describe('CDocParser', function(){
         it('should warn if used multiple times', function(done){
 
           parser.on('warning', function(err){
-            assert.equal(err + '', 'Error: Annotation "test" is only allowed once per comment, second value will be ignored.');
+            assert.equal(err + '', 'Error: Annotation `test` is only allowed once per comment, second value will be ignored.');
             done();
           });
 

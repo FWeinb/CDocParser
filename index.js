@@ -272,13 +272,13 @@ var CommentParser = (function(){
             } else {
               this.emit(
                 'warning',
-                new Error('Annotation "'+ name + '" is only allowed once per comment, second value will be ignored.')
+                new Error('Annotation `'+ name + '` is only allowed once per comment, second value will be ignored.')
               );
             }
           } else {
             this.emit(
               'warning',
-              new Error('Annotation "' + name + '" is not allowed on comment from type "' + comment.context.type + '"')
+              new Error('Annotation `' + name + '` is not allowed on comment from type `' + comment.context.type + '`.')
             );
           }
 
