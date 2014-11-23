@@ -225,6 +225,11 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.10.0
+
+  * return a flat array of comments. 
+  * added `indexBy` and `indexByType` to restore the previous behaviour. 
+
 #### 0.9.1
 
   * Prevent negative indexes. (See [PR#10](https://github.com/FWeinb/CDocParser/pull/10)) 
