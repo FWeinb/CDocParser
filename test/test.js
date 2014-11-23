@@ -182,45 +182,43 @@ describe('CDocParser', function(){
     describe('#parse', function(){
       it('should group comments by context type', function(){
        var result = parser.parse ( comments );
-           assert.equal(result.testType1.length , 3);
-           assert.equal(result.testType2.length , 2);
-          assert.equal(result.testType3.length , 3);
+           assert.equal(result.length , 8);
       });
 
       it('should add default values', function(){
        var result = parser.parse ( comments );
-            assert.equal(result.testType3[1].test[0] , 'Default' );
+            assert.equal(result[1].test[0] , 'Default' );
       });
 
       it('should join lines without annotation into description', function(){
        var result = parser.parse ( comments );
-           assert.equal(result.testType1[0].description , 'test\ntest\n');
+           assert.equal(result[0].description , 'test\ntest\n');
       });
 
       it('should resolve a alias to the real name', function(){
        var result = parser.parse ( comments );
-           assert.equal(result.testType2.length , 2);
-           assert.equal(result.testType2[0].test[0] , 'Working' );
+           assert.equal(result.length , 8);
+           assert.equal(result[0].test[0] , 'Working' );
       });
 
       it('should convert an annotation that returns a boolean to a flag', function(){
        var result = parser.parse ( comments );
-            assert.equal(result.testType3[1].flag , true );
+            assert.equal(result[6].flag , true );
       });
 
       it('should parse a multiline annotation', function(){
        var result = parser.parse ( comments );
-            assert.equal(result.testType3[2].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
+            assert.equal(result[7].multiline[0] , "\nThis is a\nmultiline\nannotation\n");
       });
 
       it('should ignore annotations that aren\'t at the start of the line', function(){
        var result = parser.parse ( comments );
-            assert.equal(result.testType1[1].test[0] , 'Default');
+            assert.equal(result[1].test[0] , 'Default');
       });
 
       it('should ignore annotations that won\'t return anything', function(){
        var result = parser.parse ( comments );
-            assert.deepEqual(result.testType1[2].ignore , []);
+            assert.deepEqual(result[2].ignore , []);
       });
 
       it('should emit an error if annotation was not found', function(done){
@@ -234,17 +232,17 @@ describe('CDocParser', function(){
       it('should apply annotations in a block poster comment to each item', function () {
         var comments = getCommentsFrom('blockPoster.test.scss');
         var result = parser.parse ( comments );
-        assert.equal(result.testCtx.length  , 2);
-        assert.equal(result.testCtx[0].flag , undefined);
-        assert.equal(result.testCtx[1].flag , true);
+        assert.equal(result.length  , 2);
+        assert.equal(result[0].flag , undefined);
+        assert.equal(result[1].flag , true);
       });
 
       it('should apply annotations in a line poster comment to each item', function () {
         var comments = getCommentsFrom('linePoster.test.scss');
         var result = parser.parse ( comments );
-        assert.equal(result.testCtx.length  , 2);
-        assert.equal(result.testCtx[0].flag , undefined);
-        assert.equal(result.testCtx[1].flag , true);
+        assert.equal(result.length  , 2);
+        assert.equal(result[0].flag , undefined);
+        assert.equal(result[1].flag , true);
       });
 
       it('should emit an error if more than one poster comment was used', function(done){
@@ -273,7 +271,7 @@ describe('CDocParser', function(){
           lines : ['@allowedLimited'],
           context : { type : 'workingType'}
         }]);
-        assert.deepEqual(result.workingType[0].allowedLimited , []);
+        assert.deepEqual(result[0].allowedLimited , []);
       });
 
 
@@ -302,7 +300,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.equal(rawTestResult.demo[0].test, 'Hello');
+          assert.equal(rawTestResult[0].test, 'Hello');
 
         });
 
@@ -318,7 +316,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.equal(rawTestResult.demo[0].test, 'First');
+          assert.equal(rawTestResult[0].test, 'First');
 
         });
 
@@ -353,7 +351,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(extendedResult.demo[0].test, ['hello', 'extended']);
+          assert.deepEqual(extendedResult[0].test, ['hello', 'extended']);
 
 
           var defaultResult = parser.parse ([{
@@ -361,7 +359,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(defaultResult.demo[0].test, ['default', 'extended']);
+          assert.deepEqual(defaultResult[0].test, ['default', 'extended']);
 
         });
 
@@ -376,7 +374,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(extendedResult.demo[0].test, ['hello', 'extended']);
+          assert.deepEqual(extendedResult[0].test, ['hello', 'extended']);
 
 
           parser = new docParser.CommentParser(annotations, {
@@ -388,7 +386,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(defaultResult.demo[0].test, ['default']);
+          assert.deepEqual(defaultResult[0].test, ['default']);
 
 
           parser = new docParser.CommentParser(annotations, {
@@ -400,7 +398,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(defaultTestResult.demo[0].test, ['default', 'extended']);
+          assert.deepEqual(defaultTestResult[0].test, ['default', 'extended']);
 
           parser = new docParser.CommentParser(annotations, {
             autofill : ['otherName']
@@ -411,7 +409,7 @@ describe('CDocParser', function(){
             context : { type : 'demo' }
           }]);
 
-          assert.deepEqual(otherNameResult.demo[0].test, ['default', 'extended']);
+          assert.deepEqual(otherNameResult[0].test, ['default', 'extended']);
 
         });
 

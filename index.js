@@ -345,18 +345,14 @@ var CommentParser = (function(){
    * Generate data use in the view
    */
   CommentParser.prototype.parse = function (comments) {
-    var result = {};
+    var result = [];
     var posterComment = {};
     var thisParseComment = parseComment.bind(this);
 
     comments.forEach(function (comment) {
       var parsedComment = thisParseComment(comment, this.annotations, posterComment);
       if (parsedComment !== null){
-        var type = comment.context.type;
-        if (typeof result[type] === 'undefined') {
-          result[type] = [];
-        }
-        result[type].push(parsedComment);
+        result.push(parsedComment);
       }
     }, this);
 
