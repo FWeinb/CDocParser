@@ -363,7 +363,44 @@ var CommentParser = (function(){
   return CommentParser;
 })();
 
+/**
+ * Create an indexer function using given getter to choose the key
+ * to index on.
+ *
+ * @param {Function} getter
+ * @return {Function}
+ */
+function indexBy(getter) {
+
+  /**
+   * Index given data.
+   *
+   * @param {Array} data
+   * @return {Object}
+   */
+  return function indexer(data) {
+    var index = {};
+
+    data.forEach(function (comment) {
+      var type = getter(comment);
+
+      if (typeof index[type] === 'undefined') {
+        index[type] = [];
+      }
+
+      index[type].push(comment);
+    });
+
+    return index;
+  };
+}
+
+var indexByType = indexBy(function (comment) {
+  return comment.context.type;
+});
 
 module.exports.CommentParser = CommentParser;
 module.exports.CommentExtractor = CommentExtractor;
 module.exports.createIndex = createIndex;
+module.exports.indexBy = indexBy;
+module.exports.indexByType = indexByType;
