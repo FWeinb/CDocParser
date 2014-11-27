@@ -108,7 +108,7 @@ Create a new `CommentParser` where `annotations` is an object like:
 
 This object is used to provide parser for various types of annotations. It also includes tha ability to include aliases.
 
-#### `#parse ( comments )`
+#### `#parse ( comments [, id ])`
 
 This methods takes a comments array provided by `CommentExtractor#extract` and parses all annotations. The resulting
 object will look like:
@@ -224,6 +224,10 @@ The `multiple` key is used to determine if this can be used mutliple times per c
 Use `mocha test` to run the unit tests.
 
 ## Changelog
+
+#### 0.11.0
+
+  * Add the ability to pass in a `id` string to the `parse` function. Used for error reporting.
 
 #### 0.10.0
 

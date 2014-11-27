@@ -232,7 +232,7 @@ var CommentParser = (function(){
 
   util.inherits(CommentParser, EventEmitter);
 
-  var parseComment = function (comment, annotations, posterComment) {
+  var parseComment = function (comment, annotations, posterComment, id) {
     var parsedComment = {
       description: '',
       commentRange: comment.commentRange,
@@ -272,18 +272,31 @@ var CommentParser = (function(){
             } else {
               this.emit(
                 'warning',
-                new Error('Annotation `'+ name + '` is only allowed once per comment, second value will be ignored.')
+                new Error(
+                  'Annotation `'+ name + '` is only allowed once per comment, second value will be ignored.' +
+                  ((id) ? 'Location `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+                )
               );
             }
           } else {
             this.emit(
               'warning',
-              new Error('Annotation `' + name + '` is not allowed on comment from type `' + comment.context.type + '`.')
+              new Error(
+                'Annotation `' + name + '` is not allowed on comment from type `' + comment.context.type + '`' +
+                ((id) ? ' in `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '') +
+                '.'
+              )
             );
           }
 
         } else { 
-          this.emit('warning', new Error('Parser for annotation `' + match[1] + '` not found.'));
+          this.emit(
+            'warning',
+            new Error(
+              'Parser for annotation `' + match[1] + '` not found.' +
+              ((id) ? ' Location: `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+            )
+          );
         }
       } else {
         parsedComment.description += line + '\n';
@@ -298,7 +311,13 @@ var CommentParser = (function(){
       if (Object.keys(posterComment).length === 0){
         extend(posterComment, parsedComment);
       } else {
-        this.emit('warning', new Error('You can\'t have more than one poster comment.'));
+        this.emit(
+          'warning',
+          new Error(
+            'You can\'t have more than one poster comment.' +
+            ((id) ? ' Location: `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+          )
+        );
       }
       // Don't add poster comments to the output
       return null;
@@ -344,13 +363,13 @@ var CommentParser = (function(){
    * Parse the comments returned by the CommentExtractor.
    * Generate data use in the view
    */
-  CommentParser.prototype.parse = function (comments) {
+  CommentParser.prototype.parse = function (comments, id) {
     var result = [];
     var posterComment = {};
     var thisParseComment = parseComment.bind(this);
 
     comments.forEach(function (comment) {
-      var parsedComment = thisParseComment(comment, this.annotations, posterComment);
+      var parsedComment = thisParseComment(comment, this.annotations, posterComment, id);
       if (parsedComment !== null){
         result.push(parsedComment);
       }

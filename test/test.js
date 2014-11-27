@@ -129,14 +129,14 @@ describe('CDocParser', function(){
 
     // Test comments
     var comments = [
-      { lines : ['test', 'test', '@test'], context : { type : 'testType1'} },
-      { lines : ['test', 'test', ' @test'], context : { type : 'testType1'} },
-      { lines : ['test', '@ignore ingore this', 'test', '@ignore ingore this'], context : { type : 'testType1'} },
-      { lines : ['test', 'test', '@aliasTest'], context : { type : 'testType2'} },
-      { lines : ['test', 'test', '@test'], context : { type : 'testType2'} },
-      { lines : ['test', 'test', '@test'], context : { type : 'testType3'} },
-      { lines : ['test', 'test', '@flag'], context : { type : 'testType3'} },
-      { lines : ['@multiline\nThis is a\nmultiline\nannotation\n'], context : { type : 'testType3'} }
+      { lines : ['test', 'test', '@test'], commentRange : { start : 1, end :3 }, context : { type : 'testType1'} },
+      { lines : ['test', 'test', ' @test'], commentRange : { start : 1, end :3 }, context : { type : 'testType1'} },
+      { lines : ['test', '@ignore ingore this', 'test', '@ignore ingore this'], commentRange : { start : 1, end :3 }, context : { type : 'testType1'} },
+      { lines : ['test', 'test', '@aliasTest'], commentRange : { start : 1, end :3 }, context : { type : 'testType2'} },
+      { lines : ['test', 'test', '@test'], commentRange : { start : 1, end :3 }, context : { type : 'testType2'} },
+      { lines : ['test', 'test', '@test'], commentRange : { start : 1, end :3 }, context : { type : 'testType3'} },
+      { lines : ['test', 'test', '@flag'], commentRange : { start : 1, end :3 }, context : { type : 'testType3'} },
+      { lines : ['@multiline\nThis is a\nmultiline\nannotation\n'], commentRange : { start : 1, end :3 }, context : { type : 'testType3'} }
     ];
 
     // Test Annotations
@@ -226,7 +226,15 @@ describe('CDocParser', function(){
           assert.equal(err + '', 'Error: Parser for annotation `notFound` not found.');
           done();
         });
-        var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'} }] );
+        var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'}, commentRange : { start : 1, end : 3} }] );
+      });
+
+      it('should emit an error if annotation was not found and have ctx', function(done){
+        parser.on('warning', function(err){
+          assert.equal(err + '', 'Error: Parser for annotation `notFound` not found. Location: `file.scss:1:3`');
+          done();
+        });
+        var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'}, commentRange : { start : 1, end : 3} }], 'file.scss' );
       });
 
       it('should apply annotations in a block poster comment to each item', function () {
@@ -255,6 +263,16 @@ describe('CDocParser', function(){
         var result = parser.parse (comments);
       });
 
+      it('should emit an error if more than one poster comment was used and include location', function(done){
+        var comments = extractor.extract('/**\n * Poster Comment\n **/ \n\n\n /**\n * Poster Comment\n **/');
+
+        parser.on('warning', function(err){
+          assert.equal(err + '', 'Error: You can\'t have more than one poster comment. Location: `file.scss:6:8`');
+          done();
+        });
+        var result = parser.parse (comments, 'file.scss');
+      });
+
       it('should emit an warning if not allowed comment type', function(done){
         parser.on('warning', function(err){
           assert.equal(err + '', 'Error: Annotation `allowedLimited` is not allowed on comment from type `testType3`.');
@@ -262,14 +280,28 @@ describe('CDocParser', function(){
         });
         var result = parser.parse ([{
           lines : ['@allowedLimited'],
-          context : { type : 'testType3'}
+          context : { type : 'testType3'},
+          commentRange : { start : 1, end :3 }
         }]);
+      });
+
+      it('should emit an warning if not allowed comment type and include location', function(done){
+        parser.on('warning', function(err){
+          assert.equal(err + '', 'Error: Annotation `allowedLimited` is not allowed on comment from type `testType3` in `file.js:1:3`.');
+          done();
+        });
+        var result = parser.parse ([{
+          lines : ['@allowedLimited'],
+          context : { type : 'testType3'},
+          commentRange : { start : 1, end :3 }
+        }], 'file.js');
       });
 
       it('should work on allowed context.type', function(){
         var result = parser.parse ([{
           lines : ['@allowedLimited'],
-          context : { type : 'workingType'}
+          context : { type : 'workingType'},
+          commentRange : { start : 1, end :3 }
         }]);
         assert.deepEqual(result[0].allowedLimited , []);
       });
@@ -297,7 +329,8 @@ describe('CDocParser', function(){
 
           var rawTestResult = parser.parse ([{
             lines : ['@test Hello'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.equal(rawTestResult[0].test, 'Hello');
@@ -313,7 +346,8 @@ describe('CDocParser', function(){
 
           var rawTestResult = parser.parse ([{
             lines : ['@test First', '@test Second'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.equal(rawTestResult[0].test, 'First');
@@ -348,7 +382,8 @@ describe('CDocParser', function(){
 
           var extendedResult = parser.parse ([{
             lines : ['@test hello'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.deepEqual(extendedResult[0].test, ['hello', 'extended']);
@@ -356,7 +391,8 @@ describe('CDocParser', function(){
 
           var defaultResult = parser.parse ([{
             lines : ['Just a description'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.deepEqual(defaultResult[0].test, ['default', 'extended']);
@@ -371,7 +407,8 @@ describe('CDocParser', function(){
 
           var extendedResult = parser.parse ([{
             lines : ['@test hello'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.deepEqual(extendedResult[0].test, ['hello', 'extended']);
@@ -383,7 +420,8 @@ describe('CDocParser', function(){
 
           var defaultResult = parser.parse ([{
             lines : ['Just a description'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.deepEqual(defaultResult[0].test, ['default']);
@@ -395,7 +433,8 @@ describe('CDocParser', function(){
 
           var defaultTestResult = parser.parse ([{
             lines : ['Just a description'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.deepEqual(defaultTestResult[0].test, ['default', 'extended']);
@@ -406,7 +445,8 @@ describe('CDocParser', function(){
 
           var otherNameResult = parser.parse ([{
             lines : ['Just a description'],
-            context : { type : 'demo' }
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
           }]);
 
           assert.deepEqual(otherNameResult[0].test, ['default', 'extended']);
