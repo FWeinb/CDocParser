@@ -225,6 +225,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.11.1
+
+  * Fix unclear error level in messages. (See [#12](https://github.com/FWeinb/CDocParser/issues/12))
+
 #### 0.11.0
 
   * Add the ability to pass in a `id` string to the `parse` function. Used for error reporting.
