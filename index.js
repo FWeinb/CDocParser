@@ -272,24 +272,30 @@ var CommentParser = (function(){
             } else {
               this.emit(
                 'warning',
+                new Error(
                   'Annotation `'+ name + '` is only allowed once per comment, second value will be ignored.' +
                   ((id) ? 'Location `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+                )
               );
             }
           } else {
             this.emit(
               'warning',
+              new Error(
                 'Annotation `' + name + '` is not allowed on comment from type `' + comment.context.type + '`' +
                 ((id) ? ' in `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '') +
                 '.'
+              )
             );
           }
 
         } else { 
           this.emit(
             'warning',
+            new Error(
               'Parser for annotation `' + match[1] + '` not found.' +
               ((id) ? ' Location: `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+            )
           );
         }
       } else {
@@ -307,8 +313,10 @@ var CommentParser = (function(){
       } else {
         this.emit(
           'warning',
-          'You can\'t have more than one poster comment.' +
-          ((id) ? ' Location: `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+          new Error(
+            'You can\'t have more than one poster comment.' +
+            ((id) ? ' Location: `' + id + ':' + comment.commentRange.start + ':' + comment.commentRange.end + '`' : '')
+          )
         );
       }
       // Don't add poster comments to the output

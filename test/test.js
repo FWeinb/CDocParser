@@ -223,7 +223,7 @@ describe('CDocParser', function(){
 
       it('should emit an error if annotation was not found', function(done){
         parser.on('warning', function(err){
-          assert.equal(err + '', 'Parser for annotation `notFound` not found.');
+          assert.equal(err + '', 'Error: Parser for annotation `notFound` not found.');
           done();
         });
         var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'}, commentRange : { start : 1, end : 3} }] );
@@ -231,7 +231,7 @@ describe('CDocParser', function(){
 
       it('should emit an error if annotation was not found and have ctx', function(done){
         parser.on('warning', function(err){
-          assert.equal(err + '', 'Parser for annotation `notFound` not found. Location: `file.scss:1:3`');
+          assert.equal(err + '', 'Error: Parser for annotation `notFound` not found. Location: `file.scss:1:3`');
           done();
         });
         var result = parser.parse ( [{ lines : ['@notFound'], context : { type : 'testType1'}, commentRange : { start : 1, end : 3} }], 'file.scss' );
@@ -257,7 +257,7 @@ describe('CDocParser', function(){
         var comments = extractor.extract('/**\n * Poster Comment\n **/ \n\n\n /**\n * Poster Comment\n **/');
 
         parser.on('warning', function(err){
-          assert.equal(err + '', 'You can\'t have more than one poster comment.');
+          assert.equal(err + '', 'Error: You can\'t have more than one poster comment.');
           done();
         });
         var result = parser.parse (comments);
@@ -267,7 +267,7 @@ describe('CDocParser', function(){
         var comments = extractor.extract('/**\n * Poster Comment\n **/ \n\n\n /**\n * Poster Comment\n **/');
 
         parser.on('warning', function(err){
-          assert.equal(err + '', 'You can\'t have more than one poster comment. Location: `file.scss:6:8`');
+          assert.equal(err + '', 'Error: You can\'t have more than one poster comment. Location: `file.scss:6:8`');
           done();
         });
         var result = parser.parse (comments, 'file.scss');
@@ -275,7 +275,7 @@ describe('CDocParser', function(){
 
       it('should emit an warning if not allowed comment type', function(done){
         parser.on('warning', function(err){
-          assert.equal(err + '', 'Annotation `allowedLimited` is not allowed on comment from type `testType3`.');
+          assert.equal(err + '', 'Error: Annotation `allowedLimited` is not allowed on comment from type `testType3`.');
           done();
         });
         var result = parser.parse ([{
@@ -287,7 +287,7 @@ describe('CDocParser', function(){
 
       it('should emit an warning if not allowed comment type and include location', function(done){
         parser.on('warning', function(err){
-          assert.equal(err + '', 'Annotation `allowedLimited` is not allowed on comment from type `testType3` in `file.js:1:3`.');
+          assert.equal(err + '', 'Error: Annotation `allowedLimited` is not allowed on comment from type `testType3` in `file.js:1:3`.');
           done();
         });
         var result = parser.parse ([{
@@ -340,7 +340,7 @@ describe('CDocParser', function(){
         it('should warn if used multiple times', function(done){
 
           parser.on('warning', function(err){
-            assert.equal(err + '', 'Annotation `test` is only allowed once per comment, second value will be ignored.');
+            assert.equal(err + '', 'Error: Annotation `test` is only allowed once per comment, second value will be ignored.');
             done();
           });
 
