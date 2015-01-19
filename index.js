@@ -38,17 +38,34 @@ var CommentExtractor = (function () {
    * @return {RegExp}
    */
   function createDocCommentRegExp (lineCommentStyle, blockCommentStyle) {
-    var linePattern =
-        '(?:[ \\t]*' +
-        escapeStringRegexp(lineCommentStyle) +
-        '.*\\S*[\\s]?)+$';
+    var linePattern;
+    if (lineCommentStyle) {
+      linePattern =
+          '(?:[ \\t]*' +
+          escapeStringRegexp(lineCommentStyle) +
+          '.*\\S*[\\s]?)+$';
+    }
 
-    var blockPattern =
-        '^[ \\t]*' +
-        escapeStringRegexp(blockCommentStyle) +
-        '((?:[^*]|[\\r\\n]|(?:\\*+(?:[^*/]|[\\r\\n])))*)(\\*+)\\/';
+    var blockPattern;
+    if (blockCommentStyle) {
+      blockPattern =
+          '^[ \\t]*' +
+          escapeStringRegexp(blockCommentStyle) +
+          '((?:[^*]|[\\r\\n]|(?:\\*+(?:[^*/]|[\\r\\n])))*)(\\*+)\\/';
+    }
 
-    return new RegExp(linePattern + '|' + blockPattern, 'gm');
+
+    var regex = linePattern;
+
+    if (regex !== undefined && blockPattern !== undefined){
+      regex += '|' + blockPattern;
+    }
+
+    if (regex === undefined) {
+      regex = blockPattern;
+    }
+
+    return new RegExp(regex, 'gm');
   }
 
   /**
@@ -58,7 +75,10 @@ var CommentExtractor = (function () {
    * @return {RegExp}
    */
   function createLineCommentRegExp (lineCommentStyle) {
-    return new RegExp(escapeStringRegexp(lineCommentStyle) + '[\\/]*');
+    if (lineCommentStyle) {
+      return new RegExp(escapeStringRegexp(lineCommentStyle) + '[\\/]*');
+    }
+    return null;
   }
 
   /**
@@ -116,10 +136,25 @@ var CommentExtractor = (function () {
     this.parseContext = parseContext;
 
     opts = opts || {};
-    if (!opts.lineCommentStyle) { opts.lineCommentStyle = '///'; }
-    if (!opts.blockCommentStyle) { opts.blockCommentStyle = '/**'; }
+
+    // Enable both line comments and block comments
+    opts.lineComment  = opts.lineComment  === false ? false : true;
+    opts.blockComment = opts.blockComment === false ? false : true;
+
+    if (opts.lineComment === false && opts.blockComment === false) {
+      throw new Error('At least one comment style has to be enabled.');
+    }
+
+    if (opts.lineComment && !opts.lineCommentStyle) {
+      opts.lineCommentStyle = '///';
+    }
+
+    if (opts.blockComment && !opts.blockCommentStyle) {
+      opts.blockCommentStyle = '/**';
+    }
 
     this.opts = opts;
+
     this.docCommentRegEx = createDocCommentRegExp(opts.lineCommentStyle, opts.blockCommentStyle);
     this.lineCommentRegEx = createLineCommentRegExp(opts.lineCommentStyle);
   }

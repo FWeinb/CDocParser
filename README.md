@@ -59,6 +59,8 @@ To support custom comment formats set `lineCommentStyle` and/or `blockCommentSty
 
 ```
 new CommentExtractor(contextParser, {
+  lineComment: true,
+  blockComment: true,
   lineCommentStyle: '///',
   blockCommentStyle: '/**'
 })
@@ -224,6 +226,10 @@ The `multiple` key is used to determine if this can be used mutliple times per c
 Use `mocha test` to run the unit tests.
 
 ## Changelog
+
+#### 0.12.0
+ 
+  * Add the options `lineComment` and `blockComment` as boolean states to disbale parsing of either of them.
 
 #### 0.11.0
 

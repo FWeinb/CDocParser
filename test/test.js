@@ -4,9 +4,16 @@ var docParser = require('../');
 
 describe('CDocParser', function(){
 
-  var extractor = new docParser.CommentExtractor( function (){ return { type : 'testCtx'}; } );
+  var createExtractor = function(opts){
+    return new docParser.CommentExtractor( function (){ return { type : 'testCtx'}; }, opts );
+  };
 
-  var getCommentsFrom = function(file){
+  var extractor = createExtractor();
+
+  var getCommentsFrom = function(file, opts){
+    if (opts){
+      return createExtractor(opts).extract(fs.readFileSync(__dirname + '/fixtures/'+file, 'utf-8'));
+    }
     return extractor.extract(fs.readFileSync(__dirname + '/fixtures/'+file, 'utf-8'));
   };
 
@@ -46,6 +53,12 @@ describe('CDocParser', function(){
           var comments = getCommentsFrom('blockIndentation.test.scss');
           assert.deepEqual(comments[0].lines, ['test', '   hello', '  world']);
         });
+
+        it('should not extract block comments if disabled', function(){
+          var comments = getCommentsFrom('blockIndentation.test.scss', {blockComment : false});
+          assert.equal(comments.length, 0);
+        });
+
       });
 
       describe('Line comments', function(){
@@ -74,6 +87,12 @@ describe('CDocParser', function(){
           assert.deepEqual(comments[0].lines, [ 'Just a test', '   ' ]);
           assert.deepEqual(comments[0].type, 'poster');
         });
+
+        it('should not extract line comments if disabled', function(){
+          var comments = getCommentsFrom('lineIndentionBefore.test.scss', {lineComment : false});
+          assert.equal(comments.length, 0);
+        });
+
       });
 
       describe('Mixed style comments', function(){
@@ -85,6 +104,18 @@ describe('CDocParser', function(){
           assert.deepEqual(comments[2].lines, ['Single line test']);
           assert.deepEqual(comments[2].commentRange, { start: 14, end: 14 });
         });
+
+        it('should either have line or block comments', function(){
+          var commentsBlock = getCommentsFrom('mixed.test.scss', {lineComment : false});
+          assert.equal(commentsBlock.length, 1);
+          assert.deepEqual(commentsBlock[0].lines, ['', 'Block comment test', '']);
+
+          var commentsLine = getCommentsFrom('mixed.test.scss', {blockComment : false});
+          assert.equal(commentsLine.length, 2);
+          assert.deepEqual(commentsLine[1].lines, ['Single line test']);
+          assert.deepEqual(commentsLine[1].commentRange, { start: 14, end: 14 });
+        });
+
       });
 
       describe('Block comment spanning a single line', function(){
@@ -117,6 +148,21 @@ describe('CDocParser', function(){
           assert.deepEqual(comments[1].commentRange, { start: 7, end: 7 });
         });
       });
+
+
+      describe('Error on both disabled', function(){
+        it('should throw an error if both styles are disabled', function (){
+          try{
+            var extractor = new docParser.CommentExtractor( function (){}, {
+              lineComment: false,
+              blockComment: false
+            });
+          } catch (e) {
+            assert.equal(e+'', 'Error: At least one comment style has to be enabled.');
+          }
+        });
+      });
+
     });
   });
 
