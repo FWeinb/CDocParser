@@ -51,7 +51,7 @@ var CommentExtractor = (function () {
       blockPattern =
           '^[ \\t]*' +
           escapeStringRegexp(blockCommentStyle) +
-          '((?:[^*]|[\\r\\n]|(?:\\*+(?:[^*/]|[\\r\\n])))*)(\\*+)\\/';
+          '((?:[^*]|\\n|(?:\\*+(?:[^*/]|\\n)))*)(\\*+)\\/';
     }
 
 
@@ -106,7 +106,7 @@ var CommentExtractor = (function () {
   }
 
   var cleanBlockComment = function (comment) {
-    var removeFirstLine = comment.replace(/^.*?[\r\n]+|[\r\n].*?$/g, '');
+    var removeFirstLine = comment.replace(/^.*?\n+|\n.*?$/g, '');
     var removeLeadingStar = removeFirstLine.replace(/^[ \t]*\*/gm, '');
     return stripIndent(removeLeadingStar).split(/\n/);
   };
@@ -131,6 +131,11 @@ var CommentExtractor = (function () {
       type : type
     };
   };
+
+  var unifyLineEndings = function (code) {
+    return code.replace(/\r\n?|\n/g, '\n');
+  };
+
 
   function CommentExtractor (parseContext, opts) {
     this.parseContext = parseContext;
@@ -165,6 +170,8 @@ var CommentExtractor = (function () {
    * @return {Array} Array of comment object like `{ lines : [array of comment lines], context : [result of contextParser] }`
    */
   CommentExtractor.prototype.extract = function (code) {
+    code = unifyLineEndings(code);
+
     var match;
     var comments = [];
 

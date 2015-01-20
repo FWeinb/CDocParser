@@ -501,6 +501,24 @@ describe('CDocParser', function(){
 
       });
 
+      describe('File with CRLF', function(){
+        it('should extract comments', function (){
+          var comments = getCommentsFrom('crlf.test.scss');
+          assert.equal(comments.length, 2);
+          assert.deepEqual(comments[0].lines, [
+            'Block comment with CRLF.',
+            'With multiple lines.'
+          ]);
+          assert.deepEqual(comments[0].commentRange, { start: 1, end: 4 });
+          assert.deepEqual(comments[1].lines, [
+            '',
+            'Comment with CRLF.',
+            'It have multiple lines in a single comment.',
+            ''
+          ]);
+          assert.deepEqual(comments[1].commentRange, { start: 6, end: 9 });
+        });
+      });
 
     });
   });
