@@ -227,6 +227,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.12.1
+ 
+  * Unify platform specify line breaks (like `\r\n`) to `\n` before processing
+
 #### 0.12.0
  
   * Add the options `lineComment` and `blockComment` as boolean states to disbale parsing of either of them.
