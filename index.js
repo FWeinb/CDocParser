@@ -41,7 +41,7 @@ var CommentExtractor = (function () {
     var linePattern;
     if (lineCommentStyle) {
       linePattern =
-          '(?:[ \\t]*' +
+          '^(?:[ \\t]*' +
           escapeStringRegexp(lineCommentStyle) +
           '.*\\S*[\\s]?)+$';
     }
