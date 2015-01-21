@@ -227,6 +227,10 @@ Use `mocha test` to run the unit tests.
 
 ## Changelog
 
+#### 0.12.2
+ 
+  * Fix a bug where poster comments could be deteced inside strings.
+
 #### 0.12.1
  
   * Unify platform specify line breaks (like `\r\n`) to `\n` before processing
