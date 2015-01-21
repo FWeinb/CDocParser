@@ -93,6 +93,16 @@ describe('CDocParser', function(){
           assert.equal(comments.length, 0);
         });
 
+        it('should not parse line poster inside strings', function () {
+          var comments = getCommentsFrom('linePosterStart.test.scss');
+          assert.deepEqual(comments, [{
+            lines: [ 'Only this poster comment!' ],
+            type: 'poster',
+            commentRange: { start: 1, end: 3 },
+            context: { type: 'testCtx' }
+          }]);
+        });
+
       });
 
       describe('Mixed style comments', function(){
