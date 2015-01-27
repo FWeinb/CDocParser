@@ -300,7 +300,7 @@ var CommentParser = (function(){
               }
 
               // Parse the annotation.
-              var result = annotation.parse(getContent(line, match));
+              var result = annotation.parse(getContent(line, match), parsedComment, id);
 
               // If it is a boolean use the annotaion as a flag
               if ( result === false || result === true) {
@@ -310,7 +310,7 @@ var CommentParser = (function(){
               }
 
             } else if (typeof parsedComment[name] === 'undefined'){
-              parsedComment[name] = annotation.parse(getContent(line, match));
+              parsedComment[name] = annotation.parse(getContent(line, match), parsedComment, id);
             } else {
               this.emit(
                 'warning',

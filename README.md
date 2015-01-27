@@ -98,7 +98,7 @@ Create a new `CommentParser` where `annotations` is an object like:
   },
 
   aRealAnnotation: {
-    parse : function (annotationLine) {
+    parse : function (annotationLine, info, id) {
     
     },
     default : function(){
@@ -120,6 +120,7 @@ object will look like:
   "[context.type]" : [
     {
       description : "[Contains all comment lines without an annotation]",
+      commentRange : { start : [start], end : [end] },
       [annotationName] : [resultOfAnnotationParser]
     }
   ]
@@ -149,7 +150,7 @@ The global structure looks like:
 #### Overview
 ```js
 name : {
-  parse : function(line){
+  parse : function(line, info, id){
 
   },
 
@@ -226,6 +227,12 @@ The `multiple` key is used to determine if this can be used mutliple times per c
 Use `mocha test` to run the unit tests.
 
 ## Changelog
+
+
+#### 0.13.0
+
+  * Fix a bug where only in `multiple:false` case meta-information where included in `annotation.parse`.
+  * Include `id` passed to `parse` method in every `annotation.parse` call.
 
 #### 0.12.2
  

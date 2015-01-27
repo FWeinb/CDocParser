@@ -511,6 +511,36 @@ describe('CDocParser', function(){
 
       });
 
+
+      describe('# Pass in meta information about parsed object', function(){
+
+        it('should include meta information', function(done){
+          var annotations = {
+            _ : {
+              alias : { }
+            },
+            test : {
+              parse : function(line, info, id){
+                assert.equal(id, 'FileID');
+                assert.deepEqual(info, {"description":"","commentRange":{"start":1,"end":3},"context":{"type":"demo"}});
+                done();
+              },
+              multiple: false
+            }
+          };
+
+          parser = new docParser.CommentParser(annotations);
+
+          var extendedResult = parser.parse ([{
+            lines : ['@test hello'],
+            context : { type : 'demo' },
+            commentRange : { start : 1, end :3 }
+          }], 'FileID');
+
+        });
+
+      });
+
       describe('File with CRLF', function(){
         it('should extract comments', function (){
           var comments = getCommentsFrom('crlf.test.scss');
