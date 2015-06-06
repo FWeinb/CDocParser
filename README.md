@@ -162,7 +162,9 @@ name : {
 
   },
 
-  multiple : true
+  multiple : true,
+
+  overwritePoster : true
 }
 ```
 
@@ -221,6 +223,10 @@ function(comment){
 The `multiple` key is used to determine if this can be used mutliple times per comment.
 
 > Note: A warning will be emitted if a annotation is used more than once. Only the first value is used. 
+
+### `overwritePoster` key
+
+The `overwritePoster` key is used to control if a this annotation used on an item will overwrite a poster comment. 
 
 ## Development
 
