@@ -1,6 +1,6 @@
 {
   "name": "cdocparser",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Extract C style comments and extract context from source",
   "main": "index.js",
   "repository": {
@@ -28,6 +28,7 @@
   "dependencies": {
     "escape-string-regexp": "^1.0.2",
     "lodash.assign": "^2.4.1",
+    "lodash.union": "^3.1.0",
     "strip-indent": "^1.0.0"
   }
 }

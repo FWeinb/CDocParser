@@ -5,6 +5,7 @@ var util = require('util');
 var stripIndent = require('strip-indent');
 var extend = require('lodash.assign');
 var escapeStringRegexp = require('escape-string-regexp');
+var union = require('lodash.union');
 
 /**
  * Index a buffer of text to give the byte offset for each line.
@@ -248,6 +249,11 @@ var isMultiple = function(annotation){
   return annotation.multiple === undefined || annotation.multiple === true;
 };
 
+var isOverwritePoster = function(annotation){
+  return annotation.overwritePoster === true;
+};
+
+
 var getContent = function(line, match){
   return line.substr(match.index + match[0].length).replace(/^[ \t]+|[ \t]+$/g,'');
 };
@@ -367,9 +373,16 @@ var CommentParser = (function(){
       // Merge in posterComment annotations and overwrite each annotation of item if it was not set
       // do it only if the annotation is allowed on the parsedComment.context.type
       Object.keys(posterComment).forEach(function(key){
-        if (parsedComment[key] === undefined &&
-            isAnnotationAllowed(parsedComment, annotations[key])){
-          parsedComment[key] = posterComment[key];
+        if (annotations[key] === undefined) return;
+        var annotation = annotations[key];
+        if ( isAnnotationAllowed(parsedComment, annotation) ) {
+          if (parsedComment[key] === undefined) {
+            parsedComment[key] = posterComment[key];
+          } else if (isOverwritePoster(annotation)) {
+            posterComment[key] = parsedComment[key];
+          } else {
+            parsedComment[key] = union(posterComment[key], parsedComment[key]);
+          }
         }
       });
     }

@@ -218,6 +218,17 @@ describe('CDocParser', function(){
           return true;
         }
       },
+      poster : {
+        parse : function(commentLine){
+          return commentLine;
+        }
+      },
+      posterOverwrite : {
+        parse : function(commentLine){
+          return commentLine;
+        },
+        overwritePoster: true
+      },
       multiline : {
         parse : function(commentLine){
           return commentLine;
@@ -299,6 +310,14 @@ describe('CDocParser', function(){
         assert.equal(result.length  , 2);
         assert.equal(result[0].flag , undefined);
         assert.equal(result[1].flag , true);
+      });
+
+      it('should extend poster comments except for posterOverwrite `true`', function () {
+        var comments = getCommentsFrom('posterOverwrite.test.scss');
+        var result = parser.parse ( comments );
+        assert.equal(result.length  , 2);
+        assert.deepEqual(result[1].poster , [ 'Poster', 'OnItem' ]);
+        assert.deepEqual(result[1].posterOverwrite , [ 'OnItem' ]);
       });
 
       it('should apply annotations in a line poster comment to each item', function () {
