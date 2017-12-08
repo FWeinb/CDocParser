@@ -120,9 +120,9 @@ var CommentExtractor = (function () {
     lines.shift();
 
     // Re-add second match within the same line
-    for (var i = lines.length - 1; i > -1; i = i - 1) {
+    for (var i = lines.length - 2; i > -1; i = i - 1) {
       var line = lines[i];
-      if (line.indexOf('\n') === -1 && i !== lines.length - 1) {
+      if (line.indexOf('\n') === -1) {
         lines.splice(i, 2, lines[i] + matches[i] + lines[i + 1]);
       }
     }
