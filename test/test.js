@@ -103,6 +103,11 @@ describe('CDocParser', function(){
           }]);
         });
 
+        it('should preserve subsequent line comments on the same line', function(){
+          var comments = getCommentsFrom('linePreserveNested.test.scss');
+          assert.deepEqual(comments[0].lines, ['Preserves /// nested', '/// comments', '//// all /// over', 'the ////// place']);
+        });
+
       });
 
       describe('Mixed style comments', function(){

@@ -114,8 +114,18 @@ var CommentExtractor = (function () {
 
   var cleanLineComments = function (comment, lineCommentRegExp) {
     var type;
+    var matches = comment.match(new RegExp(lineCommentRegExp.source, 'g'));
+    matches.shift();
     var lines = comment.split(lineCommentRegExp);
     lines.shift();
+
+    // Re-add second match within the same line
+    for (var i = lines.length - 2; i > -1; i = i - 1) {
+      var line = lines[i];
+      if (line.indexOf('\n') === -1) {
+        lines.splice(i, 2, lines[i] + matches[i] + lines[i + 1]);
+      }
+    }
 
     if (lines[0] !== undefined && comment.trim().indexOf('////') === 0){
       lines.shift(); // Remove line with stars
